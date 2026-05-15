@@ -8,6 +8,12 @@
 
 <br>
 
+## 👀 写真付きの導入ガイドはこちら 🔻
+
+### **[https://looklook-pages.pages.dev](https://looklook-pages.pages.dev)**
+
+<br>
+
 矢印で示して、丸で囲んで、クリックを光らせて、ズームして、ステップを重ねる。<br>
 デモ・解説・チュートリアルのための、ぜんぶ入り Chrome 拡張機能。
 
