@@ -2,6 +2,10 @@
 
 <br>
 
+<img src="banner.svg" width="100%" alt="Look!Look! banner">
+
+<br>
+
 # 👀 Look!Look!
 
 **画面を、もっと伝わるかたちに。**
@@ -15,7 +19,7 @@
 <br>
 
 矢印で示して、丸で囲んで、クリックを光らせて、ズームして、ステップを重ねる。<br>
-デモ・解説・チュートリアルのための、ぜんぶ入り Chrome 拡張機能。
+デモ・解説・チュートリアルのための Chrome 拡張機能。
 
 <br>
 
@@ -63,14 +67,6 @@
 | 🎨 カラー | プリセット色 + カスタムカラー + スポイト + 線の太さ調整 |
 | 🌈 UIテーマ | 5種類（ナチュラル / ダーク / ピンク / ブルー / ブラック） |
 
-### 🎥 録画
-
-| 機能 | 説明 |
-|------|------|
-| 画面録画 | システム音声 + マイク混合でキャプチャ |
-| 録画インジケーター | 録画中は全タブに `● REC 00:00` バッジを表示 |
-| 保存先指定 | 録画終了時に保存先ダイアログを表示 |
-
 ---
 
 ## ⌨️ ショートカット
@@ -78,7 +74,6 @@
 | 操作 | Mac | Windows |
 |------|-----|---------|
 | ツールバー ON / OFF | `⌘ Shift Y` | `Ctrl Shift Y` |
-| 録画パネルを開く / 停止 | `⌘ Shift R` | `Ctrl Shift R` |
 
 ---
 
@@ -102,7 +97,6 @@ look-look-extension/
 ├── content.js          # メインのオーバーレイUI
 ├── background.js       # サービスワーカー
 ├── popup.html/js/css   # 拡張機能アイコンのポップアップ
-├── recorder.html/js/css # 録画パネル
 ├── settings.html/js/css # 設定画面
 ├── icons/
 └── lib/
@@ -127,7 +121,6 @@ look-look-extension/
 
 - **Manifest V3**（Chrome Extension 最新仕様）
 - **Shadow DOM** でページのスタイルを汚染しない設計
-- **MediaRecorder API** による画面録画（WebM / MP4 対応）
 - `chrome.storage.local` で設定を永続化
 - ツールバーはドラッグで位置を自由に変更可能
 

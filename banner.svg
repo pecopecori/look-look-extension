@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="380" viewBox="0 0 1280 380">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&amp;display=swap');
+      .t { font-family: 'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', 'Rounded Mplus 1c', sans-serif; }
+    </style>
+    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse">
+      <path d="M 38 0 L 0 0 0 38" fill="none" stroke="rgba(167,170,210,0.22)" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(167,170,210,0.18)"/>
+      <stop offset="100%" stop-color="rgba(167,170,210,0)"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(166,181,165,0.18)"/>
+      <stop offset="100%" stop-color="rgba(166,181,165,0)"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1280" height="380" fill="#FCFAFD"/>
+  <rect width="1280" height="380" fill="url(#grid)"/>
+
+  <!-- デコ円 -->
+  <ellipse cx="160" cy="100" rx="140" ry="140" fill="url(#glow1)"/>
+  <ellipse cx="1120" cy="280" rx="160" ry="160" fill="url(#glow2)"/>
+  <circle cx="1180" cy="60" r="48" fill="rgba(255,231,144,0.35)"/>
+  <circle cx="100" cy="330" r="36" fill="rgba(255,217,61,0.22)"/>
+
+  <!-- 小さいドット装飾 -->
+  <circle cx="220" cy="48" r="5" fill="rgba(167,170,210,0.5)"/>
+  <circle cx="252" cy="68" r="3" fill="rgba(167,170,210,0.35)"/>
+  <circle cx="200" cy="78" r="4" fill="rgba(167,170,210,0.4)"/>
+  <circle cx="1050" cy="48" r="5" fill="rgba(166,181,165,0.5)"/>
+  <circle cx="1080" cy="32" r="3" fill="rgba(166,181,165,0.35)"/>
+  <circle cx="1020" cy="65" r="4" fill="rgba(166,181,165,0.4)"/>
+
+  <!-- マーカーハイライト（サブタイトル下） -->
+  <rect x="346" y="222" width="588" height="32" rx="4" fill="#FFE790" opacity="0.85"/>
+
+  <!-- メインタイトル -->
+  <text x="640" y="190" text-anchor="middle" font-size="80" font-weight="900" fill="#3D3530" class="t">👀 Look!Look!</text>
+
+  <!-- サブタイトル -->
+  <text x="640" y="252" text-anchor="middle" font-size="22" font-weight="700" fill="#3D3530" class="t">画面を、もっと伝わるかたちに。</text>
+
+  <!-- バッジ群 -->
+  <!-- Chrome Extension -->
+  <rect x="374" y="295" width="180" height="34" rx="17" fill="#A7AAD2"/>
+  <text x="464" y="317" text-anchor="middle" font-size="13" font-weight="700" fill="white" class="t">Chrome Extension</text>
+
+  <!-- MV3 -->
+  <rect x="566" y="295" width="72" height="34" rx="17" fill="#7e82b5"/>
+  <text x="602" y="317" text-anchor="middle" font-size="13" font-weight="700" fill="white" class="t">MV3</text>
+
+  <!-- v0.2.0 -->
+  <rect x="650" y="295" width="96" height="34" rx="17" fill="#A6B5A5"/>
+  <text x="698" y="317" text-anchor="middle" font-size="13" font-weight="700" fill="white" class="t">v0.2.0</text>
+
+  <!-- 配布版・無料 -->
+  <rect x="758" y="295" width="148" height="34" rx="17" fill="#FFE790"/>
+  <text x="832" y="317" text-anchor="middle" font-size="13" font-weight="700" fill="#7a6200" class="t">配布版・無料 ✨</text>
+
+  <!-- 上部ライン装飾 -->
+  <rect x="0" y="0" width="1280" height="4" fill="rgba(167,170,210,0.4)"/>
+  <!-- 下部ライン装飾 -->
+  <rect x="0" y="376" width="1280" height="4" fill="rgba(166,181,165,0.4)"/>
+</svg>
