@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Look!Look! 設定</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ Look!Look!</h1>
+      <p class="subtitle">設定</p>
+    </header>
+
+    <section class="card">
+      <h2>ショートカット</h2>
+      <ul class="howto">
+        <li><kbd>⌘⇧D</kbd>（Mac）／ <kbd>Ctrl+Shift+D</kbd>（Win）でツールバーをON/OFF</li>
+        <li><kbd>⌘⇧R</kbd>（Mac）／ <kbd>Ctrl+Shift+R</kbd>（Win）で録画パネルを開く / 録画中なら停止</li>
+        <li>拡張機能アイコンから popup でも操作できます</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>既定の動作</h2>
+      <form id="settingsForm" class="settings-form">
+        <label class="field">
+          <span class="field-label">起動時のツール</span>
+          <select id="defaultTool" name="defaultTool"></select>
+        </label>
+
+        <div class="field">
+          <span class="field-label">既定の色</span>
+          <div class="swatches selectable" id="defaultColorPicker"></div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">線の太さ</span>
+          <div class="stroke-options" id="strokeOptions"></div>
+        </div>
+
+        <div class="field toggle-grid">
+          <label class="toggle-item"><input type="checkbox" id="pikonEnabled"> クリック演出（ピコーン）を既定でON</label>
+          <label class="toggle-item"><input type="checkbox" id="clickZoomEnabled"> クリックZoomin（一瞬拡大）を既定でON</label>
+          <label class="toggle-item"><input type="checkbox" id="spotlightEnabled"> スポットライトを既定でON</label>
+          <label class="toggle-item"><input type="checkbox" id="magnifierEnabled"> ルーペを既定でON</label>
+          <label class="toggle-item"><input type="checkbox" id="keystrokeEnabled"> キーストローク表示を既定でON</label>
+          <label class="toggle-item"><input type="checkbox" id="rememberToolbarPosition"> ツールバーの位置を記憶する</label>
+        </div>
+
+        <div class="field">
+          <span class="field-label">録画の既定値</span>
+          <label class="toggle-item"><input type="checkbox" id="recordUseMic"> マイク音声も録音する</label>
+          <label class="field nested">
+            <span class="field-label">保存ファイル名の接頭辞</span>
+            <input type="text" id="filenamePrefix" maxlength="80" placeholder="pointer-recording">
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="primary-btn">保存</button>
+          <button type="button" class="secondary-btn" id="resetSettings">初期値に戻す</button>
+          <span class="save-status" id="saveStatus" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer>
+      <p>v0.2.0</p>
+    </footer>
+  </div>
+  <script src="lib/palette.js"></script>
+  <script src="lib/storage.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

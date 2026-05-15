@@ -1,0 +1,180 @@
+:root {
+  --accent: #A6B5A5;
+  --base: #F4EBDA;
+  --text: #262724;
+  --rec: #CB5457;
+  --surface: #ffffff;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--base);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.app { padding: 18px 18px 24px; }
+
+.header { margin-bottom: 14px; }
+.logo { font-weight: 900; font-size: 16px; }
+
+.card {
+  background: var(--surface);
+  border: 1.5px solid rgba(166,181,165,0.3);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+.hidden { display: none !important; }
+
+.lead { font-size: 13px; margin-bottom: 12px; color: rgba(38,39,36,0.7); }
+
+.mic-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; margin-bottom: 12px;
+  cursor: pointer;
+}
+.mic-row input { width: 16px; height: 16px; cursor: pointer; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.field input {
+  border: 1.5px solid rgba(166,181,165,0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--text);
+}
+.field input:focus {
+  outline: 2px solid rgba(166,181,165,0.25);
+  border-color: var(--accent);
+}
+
+.primary-btn, .stop-btn, .pause-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px; font-weight: 900;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.primary-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(166,181,165,0.4);
+}
+.primary-btn:hover { transform: translateY(-2px); }
+.primary-btn:disabled { opacity: 0.5; cursor: wait; transform: none; }
+
+.rec-actions {
+  display: flex; gap: 8px;
+}
+.pause-btn {
+  flex: 1;
+  background: rgba(166,181,165,0.2);
+  color: var(--text);
+  border: 1.5px solid rgba(166,181,165,0.4);
+}
+.pause-btn:hover { background: rgba(166,181,165,0.35); }
+.pause-btn.paused {
+  background: rgba(255,193,7,0.15);
+  border-color: rgba(255,193,7,0.5);
+  color: #b8860b;
+}
+
+.stop-btn {
+  flex: 1;
+  background: var(--rec);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(203,84,87,0.4);
+}
+.stop-btn:hover { transform: translateY(-2px); }
+
+.rec-dot.paused {
+  background: #FFC107;
+  animation: none;
+  box-shadow: none;
+}
+
+.hint {
+  font-size: 11px; margin-top: 10px;
+  color: rgba(38,39,36,0.5);
+}
+
+.status {
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 900; font-size: 15px;
+  margin-bottom: 14px;
+}
+.rec-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%; background: var(--rec);
+  animation: recPulse 1s infinite;
+  box-shadow: 0 0 0 0 rgba(203,84,87,0.5);
+}
+@keyframes recPulse {
+  0% { box-shadow: 0 0 0 0 rgba(203,84,87,0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(203,84,87,0); }
+  100% { box-shadow: 0 0 0 0 rgba(203,84,87,0); }
+}
+#timer {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+}
+
+.done-filename {
+  font-size: 11px; color: rgba(38,39,36,0.5); word-break: break-all;
+  margin-bottom: 12px; font-family: monospace;
+}
+.show-btn {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 16px; border-radius: 12px; border: none;
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px; font-weight: 900; cursor: pointer;
+  background: var(--accent); color: #fff;
+  box-shadow: 0 3px 10px rgba(166,181,165,0.4);
+  transition: all 0.15s;
+}
+.show-btn:hover { transform: translateY(-2px); }
+
+.countdown-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 0;
+}
+.countdown-num {
+  font-size: 64px; font-weight: 900; line-height: 1;
+  color: var(--rec);
+  animation: countPop 0.4s ease;
+}
+.countdown-label {
+  font-size: 13px; font-weight: 700; margin-top: 8px;
+  color: rgba(38,39,36,0.6);
+}
+@keyframes countPop {
+  0% { transform: scale(1.4); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.error {
+  background: rgba(203,84,87,0.1);
+  border: 1.5px solid rgba(203,84,87,0.3);
+  color: var(--rec);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
