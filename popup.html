@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="logo">
+        <span class="logo-icon">👀</span>
+        <span class="logo-text">Look!Look!</span>
+      </div>
+      <button class="icon-btn" id="openSettings" title="設定">⚙</button>
+    </div>
+
+    <div class="card">
+      <button class="primary-btn" id="toggleToolbar">
+        <span>🎨</span>
+        <span>ツールバー ON / OFF</span>
+      </button>
+    </div>
+
+    <div class="hint">
+      <div class="hint-title">ショートカット</div>
+      <div class="hint-row"><span>ツールバー</span><kbd id="shortcutToolbar">…</kbd></div>
+    </div>
+
+    <div class="footer">
+      <span>v0.2.0</span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
