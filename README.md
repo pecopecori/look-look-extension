@@ -8,7 +8,7 @@
 
 ## 👀 写真付きの導入ガイドはこちら 🔻
 
-### **[https://looklook-pages.pages.dev](https://looklook-pages.pages.dev)**
+[![導入ガイド](https://img.shields.io/badge/👀%20写真付き導入ガイド-looklook--pages.pages.dev-A7AAD2?style=for-the-badge&logoColor=white)](https://looklook-pages.pages.dev)
 
 <br>
 
