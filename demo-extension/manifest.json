@@ -3,7 +3,7 @@
   "name": "Look!Look!",
   "version": "0.2.0",
   "description": "画面に直接描いて、光らせて、ズームして伝える。デモ・解説・チュートリアルのための、ぜんぶ入りChrome拡張機能。",
-  "permissions": ["activeTab", "storage", "downloads"],
+  "permissions": ["activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
@@ -29,13 +29,6 @@
         "mac": "Command+Shift+Y"
       },
       "description": "デモツールバーをON/OFF"
-    },
-    "toggle-recording": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+R",
-        "mac": "Command+Shift+R"
-      },
-      "description": "録画パネルを開く / 録画中なら停止"
     }
   },
   "content_scripts": [
@@ -43,12 +36,6 @@
       "matches": ["<all_urls>"],
       "js": ["lib/palette.js", "lib/stamps.js", "lib/storage.js", "content.js"],
       "run_at": "document_idle"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["recorder.html"],
-      "matches": ["<all_urls>"]
     }
   ]
 }

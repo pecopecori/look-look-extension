@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Extension</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="pill">Meeting Extension</div>
+      <h1>会議録音</h1>
+      <p class="lead">タブ音声＋マイクの両方を取り、文字起こし → 議事録 → タスクまで自動化します。</p>
+    </header>
+
+    <section class="card status-card">
+      <div class="status-top">
+        <span class="status-dot" id="statusDot"></span>
+        <div>
+          <div class="status-label" id="statusLabel">準備中</div>
+          <div class="status-sub" id="statusSub">状態を取得しています…</div>
+        </div>
+      </div>
+      <div class="meta-grid">
+        <div><span>会議</span><strong id="meetingTitle">—</strong></div>
+        <div><span>経過</span><strong id="meetingElapsed">00:00:00</strong></div>
+      </div>
+    </section>
+
+    <section class="card warn-card" id="reauthCard" hidden>
+      <div class="card-title">Google 再認証が必要です</div>
+      <p class="hint">セッションが切れた可能性があります。Settings から再ログインしてください。</p>
+      <button class="btn" id="reauthBtn">Settings を開く</button>
+    </section>
+
+    <section class="card" id="issuesCard" hidden>
+      <div class="card-title">開始前に必要な設定</div>
+      <ul class="issues" id="issuesList"></ul>
+      <button class="btn" id="issuesSettingsBtn">Settings を開く</button>
+    </section>
+
+    <section class="card title-card" id="titleCard" hidden>
+      <div class="card-title">この会議のタイトル</div>
+      <input id="titleInput" class="text-input" type="text" placeholder="例: 〇〇さんMTG / 週次定例">
+      <p class="hint">空欄ならタブのタイトルから自動生成します。</p>
+      <div class="title-actions">
+        <button class="btn ghost" id="titleCancelBtn">キャンセル</button>
+        <button class="btn primary" id="titleStartBtn">この内容で開始</button>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button class="btn primary" id="startBtn">録音開始</button>
+      <button class="btn danger" id="stopBtn">録音停止</button>
+      <button class="btn" id="panelBtn">Side Panel を開く</button>
+      <button class="btn" id="reportBtn">Report を開く</button>
+      <button class="btn ghost" id="settingsBtn">Settings</button>
+    </section>
+
+    <div class="toast" id="toast"></div>
+  </main>
+
+  <script src="lib/utils.js"></script>
+  <script src="lib/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

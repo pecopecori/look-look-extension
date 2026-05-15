@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Look!Look! — 画面を、もっと伝わるかたちに</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:   #FCFAFD;
+      --lav:     #A7AAD2;
+      --lav-lt:  rgba(167,170,210,0.16);
+      --lav-md:  rgba(167,170,210,0.32);
+      --marker:  #FFE790;
+      --marker-d:#FFD93D;
+      --text:    #3D3530;
+      --text-sm: #9B8880;
+      --white:   #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background:
+        repeating-linear-gradient(to right, transparent 0 38px, rgba(167,170,210,0.16) 38px 39px),
+        repeating-linear-gradient(to bottom, transparent 0 38px, rgba(167,170,210,0.16) 38px 39px),
+        var(--paper);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* SVG ウェーブ共通 */
+    .wave-divider {
+      width: 100%;
+      height: 24px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 14' preserveAspectRatio='none'><path d='M0,7 Q12.5,0 25,7 T50,7 T75,7 T100,7' fill='none' stroke='%23A7AAD2' stroke-width='2.2'/></svg>");
+      background-repeat: repeat-x;
+      background-size: 120px 24px;
+      background-position: center;
+    }
+    .wave-flip { transform: scaleY(-1); }
+
+    /* マーカー */
+    .hl {
+      background: linear-gradient(transparent 60%, var(--marker) 60%);
+      padding: 0 4px;
+    }
+    .hl-strong {
+      background: linear-gradient(transparent 55%, var(--marker-d) 55%);
+      padding: 0 4px;
+    }
+
+    /* レイアウト */
+    .page { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 64px 0; }
+
+    h2 {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 900;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .lead {
+      font-size: 15px;
+      color: var(--text-sm);
+      line-height: 1.95;
+      max-width: 640px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    /* セクションラベル */
+    .label-tag {
+      display: inline-block;
+      background: var(--white);
+      border: 2px dashed var(--lav);
+      color: var(--lav);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    .label-row { text-align: center; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 90px 0 60px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--lav);
+      margin-bottom: 22px;
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--lav);
+    }
+    .hero-title {
+      font-size: clamp(34px, 6vw, 56px);
+      font-weight: 900;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      margin-bottom: 24px;
+    }
+    .hero-tagline {
+      font-size: 16px;
+      color: var(--text-sm);
+      line-height: 2;
+      margin-bottom: 36px;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text);
+      color: white;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      padding: 14px 36px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(61,53,48,0.25);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+    }
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(61,53,48,0.32);
+    }
+
+    /* ── 共通カード（ノート風） ── */
+    .note-card {
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      border-radius: 18px;
+      padding: 28px 26px;
+      position: relative;
+      box-shadow: 0 4px 16px rgba(167,170,210,0.15);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .note-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(167,170,210,0.25);
+    }
+
+    /* ── HERO MOCKUP ── */
+    .hero-mock-wrap {
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;
+    }
+    .hero-mock {
+      width: min(420px, 90%);
+      background: var(--white);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 14px 36px rgba(167,170,210,0.3);
+      border: 2px solid var(--lav-md);
+      position: relative;
+      overflow: hidden;
+      animation: floatMock 4s ease-in-out infinite;
+    }
+    @keyframes floatMock {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-6px); }
+    }
+    .mock-inner {
+      background: linear-gradient(135deg, #FFFBF3, #F3EBD9);
+      border-radius: 14px;
+      padding: 16px;
+      min-height: 260px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mock-page {
+      background: white;
+      border-radius: 10px;
+      padding: 14px 16px;
+      min-height: 224px;
+    }
+    .mock-page h6 { font-size: 12px; font-weight: 900; margin-bottom: 10px; }
+    .mock-line {
+      background: #F4F1EC;
+      height: 10px;
+      border-radius: 4px;
+      margin: 6px 0;
+    }
+    .mock-line.short { width: 60%; }
+
+    /* ツールバー（縦型） */
+    .float-toolbar {
+      position: absolute;
+      top: 20px; left: 20px;
+      background: #F4EBDA;
+      border: 2px solid #A6B5A5;
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.14);
+      z-index: 3;
+    }
+    .ft-btn {
+      width: 26px; height: 26px;
+      background: #fff;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      color: var(--text);
+    }
+    .ft-btn.on { background: #A6B5A5; color: #fff; }
+    .ft-btn.new-feat { background: #FFF0D6; border: 1.5px solid var(--marker-d); }
+
+    .mock-anno { position: absolute; pointer-events: none; }
+    .rect-red {
+      border: 3px solid #FF6B6B;
+      border-radius: 6px;
+      top: 130px; left: 120px;
+      width: 170px; height: 24px;
+    }
+    .arrow-blue {
+      top: 84px; left: 240px;
+      color: #339AF0;
+      font-size: 28px; font-weight: 900;
+      transform: rotate(-25deg);
+    }
+    .note-blue {
+      top: 50px; right: 22px;
+      color: #339AF0;
+      font-weight: 900; font-size: 11px;
+      background: #fff;
+      border: 1.5px dashed #339AF0;
+      padding: 3px 8px;
+      border-radius: 8px;
+      transform: rotate(3deg);
+    }
+    .pikon-anim {
+      top: 168px; left: 230px;
+      font-size: 28px;
+      animation: pikonPulse 2s ease-in-out infinite;
+    }
+    @keyframes pikonPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.25); opacity: 0.85; }
+    }
+    .step-bdg {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #FF6B6B; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 900;
+      box-shadow: 0 3px 8px rgba(255,107,107,0.4);
+    }
+    .step1 { top: 116px; left: 86px; }
+    .step2 { top: 168px; left: 86px; background: #FFA94D; }
+    .key-pill {
+      position: absolute;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(43,42,40,0.92);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 11px; font-weight: 700;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      white-space: nowrap;
+    }
+
+    /* ── CATCH CARD ── */
+    .catch-card {
+      position: relative;
+      border-radius: 22px;
+      padding: 70px 32px;
+      text-align: center;
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      overflow: hidden;
+    }
+    .catch-card::before,
+    .catch-card::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 14px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 14' preserveAspectRatio='none'><path d='M0,7 Q12.5,0 25,7 T50,7 T75,7 T100,7' fill='none' stroke='%23A7AAD2' stroke-width='2.2'/></svg>");
+      background-repeat: repeat-x;
+      background-size: 100px 14px;
+    }
+    .catch-card::before { top: 16px; }
+    .catch-card::after  { bottom: 16px; transform: scaleY(-1); }
+    .catch-text {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 900;
+      line-height: 1.7;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .feature-card {
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      border-radius: 18px;
+      padding: 26px 22px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 26px rgba(167,170,210,0.22);
+    }
+    .feature-card .new-badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: var(--marker-d);
+      color: var(--text);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .feature-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 14px;
+      background: rgba(255,231,144,0.5);
+      border: 2px solid rgba(255,217,61,0.6);
+      transition: transform 0.18s;
+    }
+    .feature-card:hover .feature-icon {
+      transform: scale(1.15);
+    }
+    .feature-title {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .feature-desc {
+      font-size: 13px;
+      color: var(--text-sm);
+      line-height: 1.9;
+    }
+
+    /* ── STEPS (HOW TO USE) ── */
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .step-card {
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      border-radius: 18px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .step-num {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      margin: 0 auto 12px;
+      background: var(--marker);
+      border: 3px solid var(--marker-d);
+      color: var(--text);
+    }
+    .step-title {
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 12px;
+      color: var(--text-sm);
+      line-height: 1.7;
+    }
+    .step-desc kbd { vertical-align: middle; }
+
+    /* ── THEME SHOWCASE ── */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .theme-card {
+      border-radius: 18px;
+      padding: 20px 16px 18px;
+      border: 2px solid var(--lav-md);
+      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--white);
+    }
+    .theme-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 26px rgba(167,170,210,0.22);
+    }
+    .theme-name {
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .theme-chips {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .theme-chip {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      border: 2px solid rgba(0,0,0,0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    /* ミニツールバープレビュー */
+    .mini-toolbar {
+      border-radius: 8px;
+      padding: 5px;
+      display: flex;
+      flex-direction: row;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .mini-btn {
+      width: 20px; height: 20px;
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8px;
+    }
+
+    /* ── PALETTE ── */
+    .palette-intro {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+    .palette-count {
+      font-size: 80px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--lav);
+      letter-spacing: -3px;
+    }
+    .palette-count-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-sm);
+      padding-bottom: 12px;
+    }
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+      gap: 8px;
+      margin-bottom: 28px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .palette-swatch {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 2px solid var(--white);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      transition: transform 0.15s;
+    }
+    .palette-swatch:hover { transform: translateY(-2px) scale(1.08); }
+
+    .stroke-row {
+      display: flex; gap: 16px; align-items: center; justify-content: center;
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      border-radius: 16px;
+      padding: 16px 22px;
+      max-width: 540px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    .stroke-label { font-size: 13px; font-weight: 900; }
+    .stroke-dots {
+      display: flex; gap: 18px; align-items: center;
+    }
+    .stroke-dot {
+      background: var(--text);
+      border-radius: 50%;
+    }
+    .stroke-dot.s1  { width: 4px;  height: 4px;  }
+    .stroke-dot.s5  { width: 9px;  height: 9px;  }
+    .stroke-dot.s10 { width: 16px; height: 16px; }
+    .stroke-dot.s20 { width: 24px; height: 24px; }
+    .stroke-dot-label {
+      font-size: 11px; color: var(--text-sm); margin-left: 5px;
+    }
+
+    /* ── SETUP ── */
+    .setup-steps {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .setup-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--white);
+      border: 2px solid var(--lav-md);
+      border-radius: 16px;
+      padding: 20px 22px;
+    }
+    .setup-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--marker);
+      border: 2.5px solid var(--marker-d);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 900;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .setup-content { flex: 1; }
+    .setup-title {
+      font-size: 15px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .setup-desc {
+      font-size: 13px;
+      color: var(--text-sm);
+      line-height: 1.8;
+    }
+    .setup-desc code {
+      background: var(--lav-lt);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--lav);
+    }
+    kbd {
+      background: #fff;
+      border: 1.5px solid var(--lav-md);
+      border-bottom-width: 2.5px;
+      border-radius: 5px;
+      padding: 1px 7px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 11px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 56px 24px 60px;
+      font-size: 13px;
+      color: var(--text-sm);
+    }
+    footer strong { color: var(--text); font-weight: 900; }
+    .footer-hearts {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    /* ── SCROLL ANIMATIONS ── */
+    [data-anim] {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    [data-anim].is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    [data-delay="1"] { transition-delay: 0.08s; }
+    [data-delay="2"] { transition-delay: 0.16s; }
+    [data-delay="3"] { transition-delay: 0.24s; }
+    [data-delay="4"] { transition-delay: 0.32s; }
+    [data-delay="5"] { transition-delay: 0.40s; }
+    [data-delay="6"] { transition-delay: 0.48s; }
+    [data-delay="7"] { transition-delay: 0.56s; }
+    [data-delay="8"] { transition-delay: 0.64s; }
+    [data-delay="9"] { transition-delay: 0.72s; }
+    [data-delay="10"]{ transition-delay: 0.80s; }
+    [data-delay="11"]{ transition-delay: 0.88s; }
+    [data-delay="12"]{ transition-delay: 0.96s; }
+
+    /* ステップカード: bounce-in from below */
+    [data-anim="bounce"] {
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+      transition: opacity 0.5s cubic-bezier(0.34,1.56,0.64,1), transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    [data-anim="bounce"].is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* テーマチップ: slide-in */
+    [data-anim="slide"] {
+      opacity: 0;
+      transform: translateX(-22px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    [data-anim="slide"].is-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    @media (max-width: 640px) {
+      section { padding: 48px 0; }
+      .hero { padding: 60px 0 40px; }
+      .theme-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Chrome 拡張機能
+    </div>
+    <h1 class="hero-title">
+      画面を、<br>
+      <span class="hl">もっと伝わる</span>かたちに。
+    </h1>
+    <p class="hero-tagline">
+      矢印で示して、丸で囲んで、クリックを光らせて、ズームして、ステップを重ねる。<br>
+      デモ・解説・チュートリアルのための、ぜんぶ入りChrome拡張機能。
+    </p>
+    <a class="hero-cta" href="#setup">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      導入してみる
+    </a>
+
+    <!-- ヒーローモックアップ -->
+    <div class="hero-mock-wrap">
+      <div class="hero-mock">
+        <div class="mock-inner">
+          <!-- ツールバー（縦型・新ボタン含む） -->
+          <div class="float-toolbar">
+            <div class="ft-btn" title="カーソル">↖</div>
+            <div class="ft-btn new-feat" title="移動ツール">✋</div>
+            <div class="ft-btn" title="四角">□</div>
+            <div class="ft-btn" title="丸">○</div>
+            <div class="ft-btn" title="矢印">↗</div>
+            <div class="ft-btn" title="ペン">✏</div>
+            <div class="ft-btn" title="ステップ番号">①</div>
+            <div class="ft-btn on" title="ピコーン">✨</div>
+            <div class="ft-btn" title="ズームイン">🔍</div>
+            <div class="ft-btn" title="スポットライト">🔦</div>
+            <div class="ft-btn new-feat" title="UIテーマ">🌈</div>
+          </div>
+          <!-- 画面 -->
+          <div class="mock-page">
+            <h6>📋 申込フォーム</h6>
+            <div style="height:8px"></div>
+            <div class="mock-line"></div>
+            <div class="mock-line short"></div>
+            <div style="height:14px"></div>
+            <div class="mock-line"></div>
+            <div class="mock-line"></div>
+            <div style="height:18px"></div>
+            <div class="mock-line short"></div>
+          </div>
+          <!-- 注釈 -->
+          <div class="mock-anno arrow-blue">↗</div>
+          <div class="mock-anno note-blue">ここ必須！</div>
+          <div class="mock-anno rect-red"></div>
+          <div class="mock-anno step-bdg step1">1</div>
+          <div class="mock-anno step-bdg step2">2</div>
+          <div class="mock-anno pikon-anim">✨</div>
+          <div class="key-pill">⌘ + Shift + Y</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider"></div>
+
+  <!-- ── CATCH ── -->
+  <section>
+    <div class="catch-card" data-anim>
+      <p class="catch-text">
+        <span class="hl">描く</span>・<span class="hl">光らせる</span>・<span class="hl">ズームする</span>。<br>
+        ぜんぶ、これ1つで。
+      </p>
+    </div>
+  </section>
+
+  <div class="wave-divider wave-flip"></div>
+
+  <!-- ── FEATURES ── -->
+  <section>
+    <div class="label-row" data-anim><span class="label-tag">FEATURES</span></div>
+    <h2 data-anim>デモに必要な機能、<br><span class="hl-strong">ぜんぶ入り。</span></h2>
+    <p class="lead" data-anim>描画も、視線誘導も、キー表示も、モザイクも。<br>バラバラのツールを切り替える必要は、もう、ありません。</p>
+
+    <div class="features-grid">
+      <div class="feature-card" data-anim data-delay="1">
+        <div class="feature-icon">✏️</div>
+        <div class="feature-title">描画＆注釈ツール</div>
+        <div class="feature-desc">四角・丸・矢印・ペン・テキスト。画面の上に直接、自由に描き込めます。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="2">
+        <div class="feature-icon">🫥</div>
+        <div class="feature-title">モザイク</div>
+        <div class="feature-desc">ドラッグするだけで個人情報や機密データをサクッと隠せます。お客様名・メアド・電話番号も安心。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="3">
+        <div class="feature-icon">①</div>
+        <div class="feature-title">ステップ番号</div>
+        <div class="feature-desc">クリックでポンポン置いていける番号バッジ。マニュアル画像作成が10秒で完成。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="4">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">スタンプ＆絵文字</div>
+        <div class="feature-desc">「重要」「OK」😍🎉 などのスタンプを、ワンクリックで画面上に配置できます。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="5">
+        <span class="new-badge">NEW</span>
+        <div class="feature-icon">✋</div>
+        <div class="feature-title">移動ツール</div>
+        <div class="feature-desc">配置した注釈・スタンプ・絵文字をドラッグで自由に動かせます。後から微調整したい時に。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="6">
+        <div class="feature-icon">✨</div>
+        <div class="feature-title">ピコーン</div>
+        <div class="feature-desc">クリックに光のバーストエフェクト。「ここを見て！」という場所へ自然と視線を引きつけます。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="7">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">ズームイン</div>
+        <div class="feature-desc">押している間、クリックした場所に向かって画面全体がズームイン。注目させたい箇所へぐっと寄れます。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="8">
+        <div class="feature-icon">🔦</div>
+        <div class="feature-title">スポットライト</div>
+        <div class="feature-desc">マウス周辺だけ明るく照らして、周囲を暗くする演出。重要な箇所に集中してもらえます。</div>
+      </div>
+      <div class="feature-card" data-anim data-delay="9">
+        <div class="feature-icon">⌨️</div>
+        <div class="feature-title">キーストローク表示</div>
+        <div class="feature-desc">押したキーが画面に大きく表示。ショートカット解説がひと目で伝わります。</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider"></div>
+
+  <!-- ── HOW TO USE ── -->
+  <section>
+    <div class="label-row" data-anim><span class="label-tag">HOW TO USE</span></div>
+    <h2 data-anim>使い方は<br><span class="hl-strong">3ステップ</span>だけ</h2>
+    <p class="lead" data-anim>難しい設定は不要。インストールしたら、すぐに使い始められます。</p>
+
+    <div class="steps-row">
+      <div class="step-card" data-anim="bounce" data-delay="1">
+        <div class="step-num">01</div>
+        <div class="step-title">インストール</div>
+        <div class="step-desc">拡張機能フォルダをChromeに読み込んでツールバーにピン留め</div>
+      </div>
+      <div class="step-card" data-anim="bounce" data-delay="3">
+        <div class="step-num">02</div>
+        <div class="step-title"><kbd>⌘+Shift+Y</kbd> で起動</div>
+        <div class="step-desc">どのページでもショートカット1発でツールバーが出現します</div>
+      </div>
+      <div class="step-card" data-anim="bounce" data-delay="5">
+        <div class="step-num">03</div>
+        <div class="step-title">好きなツールを使う</div>
+        <div class="step-desc">描く・光らせる・ズームする。好きなツールを選んでそのまま使えます</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider wave-flip"></div>
+
+  <!-- ── THEME SHOWCASE ── -->
+  <section>
+    <div class="label-row" data-anim><span class="label-tag">THEME SHOWCASE</span></div>
+    <h2 data-anim>5種類の<br><span class="hl-strong">UIテーマ</span></h2>
+    <p class="lead" data-anim>ナチュラル・ダーク・ピンク・ブルー・ブラック。<br>好みや画面の雰囲気に合わせてワンクリックで切り替えられます。</p>
+
+    <div class="theme-grid">
+      <!-- ナチュラル -->
+      <div class="theme-card" data-anim="slide" data-delay="1">
+        <div class="theme-name">🌿 ナチュラル</div>
+        <div class="theme-chips">
+          <div class="theme-chip" style="background:#F4EBDA;" title="ベース"></div>
+          <div class="theme-chip" style="background:#A6B5A5;" title="アクセント"></div>
+          <div class="theme-chip" style="background:#fff;" title="ボタン"></div>
+          <div class="theme-chip" style="background:#5C6B5A;" title="テキスト"></div>
+        </div>
+        <div class="mini-toolbar" style="background:#F4EBDA; border:1.5px solid #A6B5A5;">
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#5C6B5A;">↖</div>
+          <div class="mini-btn" style="background:#A6B5A5; border-radius:4px; color:#fff;">✋</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#5C6B5A;">□</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#5C6B5A;">✨</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#5C6B5A;">🌈</div>
+        </div>
+      </div>
+      <!-- ダーク -->
+      <div class="theme-card" data-anim="slide" data-delay="2" style="background:#1E1E2E; border-color:rgba(139,92,246,0.35);">
+        <div class="theme-name" style="color:#E2E8F0;">🌙 ダーク</div>
+        <div class="theme-chips">
+          <div class="theme-chip" style="background:#1E1E2E;" title="ベース"></div>
+          <div class="theme-chip" style="background:#8B5CF6;" title="アクセント"></div>
+          <div class="theme-chip" style="background:#2D2D3F;" title="ボタン"></div>
+          <div class="theme-chip" style="background:#E2E8F0;" title="テキスト"></div>
+        </div>
+        <div class="mini-toolbar" style="background:#2D2D3F; border:1.5px solid #8B5CF6;">
+          <div class="mini-btn" style="background:#3A3A50; border-radius:4px; color:#E2E8F0;">↖</div>
+          <div class="mini-btn" style="background:#8B5CF6; border-radius:4px; color:#fff;">✋</div>
+          <div class="mini-btn" style="background:#3A3A50; border-radius:4px; color:#E2E8F0;">□</div>
+          <div class="mini-btn" style="background:#3A3A50; border-radius:4px; color:#E2E8F0;">✨</div>
+          <div class="mini-btn" style="background:#3A3A50; border-radius:4px; color:#E2E8F0;">🌈</div>
+        </div>
+      </div>
+      <!-- ピンク -->
+      <div class="theme-card" data-anim="slide" data-delay="3" style="background:#FFF0F5; border-color:rgba(236,72,153,0.25);">
+        <div class="theme-name" style="color:#9D174D;">🌸 ピンク</div>
+        <div class="theme-chips">
+          <div class="theme-chip" style="background:#FFF0F5;" title="ベース"></div>
+          <div class="theme-chip" style="background:#EC4899;" title="アクセント"></div>
+          <div class="theme-chip" style="background:#FFE4EF;" title="ボタン"></div>
+          <div class="theme-chip" style="background:#9D174D;" title="テキスト"></div>
+        </div>
+        <div class="mini-toolbar" style="background:#FFE4EF; border:1.5px solid #EC4899;">
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#9D174D;">↖</div>
+          <div class="mini-btn" style="background:#EC4899; border-radius:4px; color:#fff;">✋</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#9D174D;">□</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#9D174D;">✨</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#9D174D;">🌈</div>
+        </div>
+      </div>
+      <!-- ブルー -->
+      <div class="theme-card" data-anim="slide" data-delay="4" style="background:#F0F7FF; border-color:rgba(59,130,246,0.25);">
+        <div class="theme-name" style="color:#1E40AF;">💙 ブルー</div>
+        <div class="theme-chips">
+          <div class="theme-chip" style="background:#F0F7FF;" title="ベース"></div>
+          <div class="theme-chip" style="background:#3B82F6;" title="アクセント"></div>
+          <div class="theme-chip" style="background:#DBEAFE;" title="ボタン"></div>
+          <div class="theme-chip" style="background:#1E40AF;" title="テキスト"></div>
+        </div>
+        <div class="mini-toolbar" style="background:#DBEAFE; border:1.5px solid #3B82F6;">
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#1E40AF;">↖</div>
+          <div class="mini-btn" style="background:#3B82F6; border-radius:4px; color:#fff;">✋</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#1E40AF;">□</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#1E40AF;">✨</div>
+          <div class="mini-btn" style="background:#fff; border-radius:4px; color:#1E40AF;">🌈</div>
+        </div>
+      </div>
+      <!-- ブラック -->
+      <div class="theme-card" data-anim="slide" data-delay="5" style="background:#0A0A0A; border-color:rgba(255,255,255,0.12);">
+        <div class="theme-name" style="color:#F5F5F5;">🖤 ブラック</div>
+        <div class="theme-chips">
+          <div class="theme-chip" style="background:#0A0A0A; border-color:rgba(255,255,255,0.15);" title="ベース"></div>
+          <div class="theme-chip" style="background:#F5F5F5;" title="アクセント"></div>
+          <div class="theme-chip" style="background:#1A1A1A;" title="ボタン"></div>
+          <div class="theme-chip" style="background:#888888;" title="テキスト"></div>
+        </div>
+        <div class="mini-toolbar" style="background:#1A1A1A; border:1.5px solid rgba(255,255,255,0.18);">
+          <div class="mini-btn" style="background:#2A2A2A; border-radius:4px; color:#F5F5F5;">↖</div>
+          <div class="mini-btn" style="background:#F5F5F5; border-radius:4px; color:#0A0A0A;">✋</div>
+          <div class="mini-btn" style="background:#2A2A2A; border-radius:4px; color:#F5F5F5;">□</div>
+          <div class="mini-btn" style="background:#2A2A2A; border-radius:4px; color:#F5F5F5;">✨</div>
+          <div class="mini-btn" style="background:#2A2A2A; border-radius:4px; color:#F5F5F5;">🌈</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider"></div>
+
+  <!-- ── COLOR PALETTE ── -->
+  <section>
+    <div class="label-row" data-anim><span class="label-tag">COLOR PALETTE</span></div>
+    <div class="palette-intro">
+      <div class="palette-count" id="paletteCountNum" data-anim>0</div>
+      <div class="palette-count-label" data-anim>色 × 線幅スライダーで<br>ブランドに合わせて</div>
+    </div>
+    <p class="lead" data-anim>50色から好きな色を、線の太さは1〜20pxを自由に調整。<br>動画やマニュアルの世界観に合わせて選べます。</p>
+
+    <div class="palette-grid" id="paletteGrid" data-anim></div>
+
+    <div class="stroke-row" data-anim>
+      <div class="stroke-label">線の太さ（1〜20px 自由調整）</div>
+      <div class="stroke-dots">
+        <div style="display:flex;align-items:center;"><div class="stroke-dot s1"></div><span class="stroke-dot-label">1px</span></div>
+        <div style="display:flex;align-items:center;"><div class="stroke-dot s5"></div><span class="stroke-dot-label">5px</span></div>
+        <div style="display:flex;align-items:center;"><div class="stroke-dot s10"></div><span class="stroke-dot-label">10px</span></div>
+        <div style="display:flex;align-items:center;"><div class="stroke-dot s20"></div><span class="stroke-dot-label">20px</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider wave-flip"></div>
+
+  <!-- ── SETUP ── -->
+  <section id="setup">
+    <div class="label-row" data-anim><span class="label-tag">SETUP</span></div>
+    <h2 data-anim>導入は<br><span class="hl-strong">3分</span>でできます</h2>
+    <p class="lead" data-anim>Chrome Web Storeへの公開前でも、開発者モードで今すぐ使えます。</p>
+
+    <div class="setup-steps">
+      <div class="setup-step" data-anim data-delay="1">
+        <div class="setup-num">1</div>
+        <div class="setup-content">
+          <div class="setup-title">フォルダをダウンロード</div>
+          <div class="setup-desc"><code>demo-extension/</code> フォルダをPCの好きな場所に置きます。</div>
+        </div>
+      </div>
+      <div class="setup-step" data-anim data-delay="2">
+        <div class="setup-num">2</div>
+        <div class="setup-content">
+          <div class="setup-title">Chromeの拡張機能ページを開く</div>
+          <div class="setup-desc">アドレスバーに <code>chrome://extensions/</code> と入力。</div>
+        </div>
+      </div>
+      <div class="setup-step" data-anim data-delay="3">
+        <div class="setup-num">3</div>
+        <div class="setup-content">
+          <div class="setup-title">デベロッパーモードをONに</div>
+          <div class="setup-desc">右上の「デベロッパーモード」トグルをONにします。</div>
+        </div>
+      </div>
+      <div class="setup-step" data-anim data-delay="4">
+        <div class="setup-num">4</div>
+        <div class="setup-content">
+          <div class="setup-title">フォルダを読み込む</div>
+          <div class="setup-desc">「パッケージ化されていない拡張機能を読み込む」をクリックして <code>demo-extension/</code> を選択。完了です！</div>
+        </div>
+      </div>
+      <div class="setup-step" data-anim data-delay="5" style="border-color:var(--marker-d); background:rgba(255,231,144,0.12);">
+        <div class="setup-num" style="background:var(--marker-d); border-color:#E8C22A;">★</div>
+        <div class="setup-content">
+          <div class="setup-title">使ってみる</div>
+          <div class="setup-desc">ピン留めしたアイコンをクリック、または <kbd>⌘+Shift+Y</kbd>（Mac）/ <kbd>Ctrl+Shift+Y</kbd>（Win）でツールバーが出現します。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider"></div>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-hearts">✨ 🌸 🌿</div>
+    <p><strong>Look!Look!</strong> — 画面解説の、やさしいパートナー</p>
+    <p style="margin-top:8px">ぺこ</p>
+  </footer>
+
+</div>
+
+<script>
+  // ── 50色パレット ──
+  const PALETTE = [
+    '#FF6B6B','#FF8E8E','#FF6B9D','#C44569','#E84393','#A55EEA','#8E44AD','#5F27CD','#341F97','#3742FA',
+    '#4834D4','#4A69BD','#1E3A8A','#0984E3','#74B9FF','#00CEC9','#00B894','#0FB9B1','#16A085','#27AE60',
+    '#2ECC71','#55EFC4','#A6E3A1','#A8E6CF','#FBC531','#FFD93D','#FDCB6E','#F39C12','#E67E22','#FD79A8',
+    '#FF7675','#D63031','#C0392B','#7F8C8D','#95A5A6','#BDC3C7','#2C3E50','#34495E','#000000','#FFFFFF',
+    '#FDF5E6','#FFE4E1','#FFEAA7','#DFE6E9','#74C0FC','#A29BFE','#FAB1A0','#E17055','#6C5CE7','#81ECEC'
+  ];
+  const grid = document.getElementById('paletteGrid');
+  PALETTE.forEach(color => {
+    const div = document.createElement('div');
+    div.className = 'palette-swatch';
+    div.style.background = color;
+    div.title = color;
+    grid.appendChild(div);
+  });
+
+  // ── スクロールアニメーション (IntersectionObserver) ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.12,
+    rootMargin: '0px 0px -60px 0px'
+  });
+
+  document.querySelectorAll('[data-anim]').forEach(el => {
+    observer.observe(el);
+  });
+
+  // ── "50" カウントアップアニメーション ──
+  const countEl = document.getElementById('paletteCountNum');
+  let countStarted = false;
+
+  const countObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !countStarted) {
+        countStarted = true;
+        let current = 0;
+        const target = 50;
+        const duration = 900; // ms
+        const stepTime = Math.floor(duration / target);
+        const timer = setInterval(() => {
+          current++;
+          countEl.textContent = current;
+          if (current >= target) {
+            clearInterval(timer);
+          }
+        }, stepTime);
+        countObserver.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.3
+  });
+
+  countObserver.observe(countEl);
+</script>
+
+</body>
+</html>

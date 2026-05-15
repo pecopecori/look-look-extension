@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Extension Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="report.css">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="pill">Meetings &amp; Tasks</div>
+      <h1>Report</h1>
+      <p>これまでの会議と書き出し状況を一覧で見ます。</p>
+    </header>
+
+    <section class="summary" id="summaryBox"></section>
+    <section class="list" id="meetingList"></section>
+  </main>
+
+  <script src="lib/utils.js"></script>
+  <script src="lib/storage.js"></script>
+  <script src="lib/idb.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>

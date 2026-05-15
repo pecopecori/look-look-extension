@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeCard Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #fffdf7;
+      --paper-soft: #fbf4ed;
+      --pink: #f3aaa7;
+      --blue: #88cfd0;
+      --blue-deep: #6bb8b9;
+      --ink: #7e7770;
+      --muted: #aaa199;
+      --line: rgba(126, 119, 112, 0.16);
+      --shadow: 0 24px 70px rgba(127, 114, 99, 0.14);
+    }
+    body {
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 8px 8px, rgba(216, 197, 163, 0.34) 2px, transparent 2.8px) 0 0 / 24px 24px,
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-soft) 48%, var(--paper) 100%);
+      color: var(--ink);
+      font-family: "Noto Sans JP", sans-serif;
+    }
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+    body::before {
+      width: 34vw;
+      min-width: 240px;
+      height: 34vw;
+      min-height: 240px;
+      left: -16vw;
+      top: 12vh;
+      background: rgba(136, 207, 208, 0.5);
+      border-radius: 45% 55% 52% 48% / 58% 42% 55% 45%;
+    }
+    body::after {
+      width: 30vw;
+      min-width: 200px;
+      height: 25vw;
+      min-height: 150px;
+      right: -10vw;
+      top: -3vh;
+      background: rgba(243, 170, 167, 0.44);
+      border-radius: 52% 48% 44% 56% / 42% 58% 42% 58%;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, 92vw); margin: 0 auto; }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 0;
+      font-family: "Josefin Sans", sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: center;
+      min-height: 88svh;
+      padding: 24px 0 72px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--pink));
+    }
+    h1 {
+      font-family: "Josefin Sans", sans-serif;
+      font-size: clamp(44px, 7vw, 84px);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+    h1 span { display: block; color: var(--blue-deep); }
+    .lead {
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.9;
+      margin-bottom: 28px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-weight: 700;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+      color: #fff;
+      border-color: transparent;
+    }
+    .frame {
+      padding: 24px;
+      border-radius: 34px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: var(--shadow);
+    }
+    .frame-screen {
+      padding: 18px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, #f4ebda 0%, #fbf4ea 100%);
+      border: 1px solid var(--line);
+    }
+    .mini-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+    .mini-panel,
+    .card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+    }
+    .mini-panel + .mini-panel { margin-top: 12px; }
+    .status {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .status.ok { background: rgba(136, 207, 208, 0.22); color: #4f9192; }
+    .status.note { background: rgba(243, 170, 167, 0.22); color: #be6f6a; }
+    section {
+      padding-bottom: 72px;
+    }
+    .section-head {
+      margin-bottom: 22px;
+    }
+    .section-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--blue-deep);
+      text-transform: uppercase;
+    }
+    h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .section-head p,
+    .card p,
+    .card li,
+    .mini-panel p,
+    .mini-panel li {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    ul { padding-left: 18px; margin-top: 10px; }
+    footer {
+      padding: 24px;
+      margin-bottom: 72px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    @media (max-width: 900px) {
+      .hero,
+      .grid,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <div>TimeCard Pro</div>
+      <a href="../extensions-showcase.html">All Extensions</a>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Timer / Clients / Sheets / Calendar</div>
+        <h1>TimeCard<br><span>Pro</span></h1>
+        <p class="lead">
+          クライアント別の稼働管理を、日々の開始停止から集計、レポート、Google連携までまとめた拡張機能です。
+          ベースのタイマー機能はすでに使えます。Google Sheets / Calendar と Slack は設定を入れると拡張される構成です。
+        </p>
+        <div class="row">
+          <a class="btn primary" href="./landing.html">既存の紹介ページを見る</a>
+          <a class="btn" href="../dist/timecard-extension.zip">ZIPを開く</a>
+        </div>
+      </div>
+      <div class="frame">
+        <div class="frame-screen">
+          <div class="mini-header">
+            <span>TIME TRACKING</span>
+            <span>v2.0.0</span>
+          </div>
+          <div class="mini-panel">
+            <div class="status ok">Ready</div>
+            <h3>単体タイマーとしてはそのまま使える</h3>
+            <p>クライアント選択、開始・休憩・終了、タグ、タスク、日次合計まではローカルだけで動作します。</p>
+          </div>
+          <div class="mini-panel">
+            <div class="status note">Setup</div>
+            <h3>連携機能は事前設定が必要</h3>
+            <p>Sheets / Calendar の OAuth、Slack トークン、Spreadsheet ID は設定画面で入力する想定です。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-kicker">Core Features</div>
+        <h2>単体で見せられる機能</h2>
+        <p>外部連携なしでも、タイムカードとしてかなり多機能です。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>日々の記録</h3>
+          <ul>
+            <li>クライアント別の開始 / 休憩 / 終了</li>
+            <li>タグ付けとタスク選択</li>
+            <li>今日合計と締め日ベースの月次集計</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>運用補助</h3>
+          <ul>
+            <li>ポモドーロ表示</li>
+            <li>アイドル検知</li>
+            <li>クライアントごとの目標時間と収益表示</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-kicker">Integrations</div>
+        <h2>設定を入れると使える連携</h2>
+        <p>デモでは「ここまで伸びる」説明用として見せるのが安全です。</p>
+      </div>
+      <div class="grid three">
+        <article class="card">
+          <h3>Google Sheets</h3>
+          <p>月別シートの自動作成、行出力、ヘッダー固定、色付けまで入っています。</p>
+        </article>
+        <article class="card">
+          <h3>Google Calendar</h3>
+          <p>作業時間のイベント化、空き時間算出、カレンダー一覧取得の実装があります。</p>
+        </article>
+        <article class="card">
+          <h3>Slack</h3>
+          <p>作業中 / 休憩中のステータス更新に対応しています。</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-kicker">Demo Notes</div>
+        <h2>今日の見せ方</h2>
+        <p>無理に全部見せず、ローカル動作と拡張余地を切り分けるのが安定です。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>その場で見せる範囲</h3>
+          <ul>
+            <li>クライアント切り替え</li>
+            <li>タイマー開始と停止</li>
+            <li>設定画面の項目量</li>
+            <li>既存の `landing.html` で全体像補足</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>注意点</h3>
+          <ul>
+            <li>Google OAuth の client ID は事前確認が必要</li>
+            <li>Spreadsheet ID が未設定だと Sheets 同期は不可</li>
+            <li>Slack は実トークン前提なので本番連携は控えめに扱う</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      TimeCard Pro は「ローカルで使える土台」と「外部連携まで伸ばせる構成」が両立しています。
+      今日のデモでは、動く基盤として見せつつ、連携部分は設定前提で説明するのが安全です。
+    </footer>
+  </div>
+</body>
+</html>

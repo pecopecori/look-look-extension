@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Extension Demo Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #fffdf7;
+      --paper-soft: #fbf4ed;
+      --pink: #f3aaa7;
+      --pink-soft: #f7c9c7;
+      --blue: #88cfd0;
+      --blue-deep: #6bb8b9;
+      --ink: #7e7770;
+      --muted: #aaa199;
+      --line: rgba(126, 119, 112, 0.16);
+      --white: #ffffff;
+      --shadow: 0 24px 70px rgba(127, 114, 99, 0.14);
+    }
+    body {
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 8px 8px, rgba(216, 197, 163, 0.38) 2px, transparent 2.8px) 0 0 / 24px 24px,
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-soft) 48%, var(--paper) 100%);
+      color: var(--ink);
+      font-family: "Noto Sans JP", sans-serif;
+      overflow-x: hidden;
+    }
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -2;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+    body::before {
+      width: 36vw;
+      min-width: 220px;
+      height: 36vw;
+      min-height: 220px;
+      left: -15vw;
+      top: 16vh;
+      background: rgba(243, 170, 167, 0.58);
+      border-radius: 45% 55% 52% 48% / 58% 42% 55% 45%;
+    }
+    body::after {
+      width: 30vw;
+      min-width: 190px;
+      height: 24vw;
+      min-height: 150px;
+      right: -12vw;
+      top: -3vh;
+      background: rgba(136, 207, 208, 0.55);
+      border-radius: 52% 48% 44% 56% / 42% 58% 42% 58%;
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell {
+      width: min(1160px, 92vw);
+      margin: 0 auto;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      font-family: "Josefin Sans", sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .hero {
+      min-height: 72svh;
+      display: grid;
+      align-items: center;
+      padding: 30px 0 70px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 26px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--blue));
+    }
+    h1 {
+      font-family: "Josefin Sans", sans-serif;
+      font-size: clamp(46px, 8vw, 92px);
+      line-height: 0.94;
+      letter-spacing: -0.05em;
+      margin-bottom: 22px;
+    }
+    h1 span { display: block; color: var(--blue-deep); }
+    .lead {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.9;
+      margin-bottom: 28px;
+    }
+    .hero-notes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pill {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .board {
+      padding: 24px;
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: var(--shadow);
+    }
+    .board-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .board-item {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+    }
+    .board-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+    .status {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .status.ok { background: rgba(136, 207, 208, 0.22); color: #4f9192; }
+    .status.mid { background: rgba(243, 170, 167, 0.22); color: #be6f6a; }
+    .status.wait { background: rgba(216, 197, 163, 0.24); color: #8f7d66; }
+    section {
+      padding-bottom: 72px;
+    }
+    .section-head {
+      margin-bottom: 22px;
+    }
+    .section-kicker {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--blue-deep);
+      text-transform: uppercase;
+    }
+    h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .section-head p,
+    .board-item p,
+    .card p,
+    .card li {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      padding: 22px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .card h3 {
+      margin: 10px 0 8px;
+      font-size: 22px;
+    }
+    .card ul {
+      padding-left: 18px;
+      margin-top: 10px;
+    }
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      font-weight: 700;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+      border-color: transparent;
+      color: #fff;
+    }
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+    .step {
+      padding: 18px 20px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: "Josefin Sans", sans-serif;
+      font-size: 18px;
+      color: var(--blue-deep);
+    }
+    footer {
+      margin-bottom: 72px;
+      padding: 24px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      line-height: 1.9;
+    }
+    @media (max-width: 960px) {
+      .hero-grid,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav">
+      <div>Extension Demo Board</div>
+      <div>May 14 Demo</div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Chrome Extensions / Local Demo / Portfolio Style</div>
+          <h1>Three<br><span>Extensions</span></h1>
+          <p class="lead">
+            昨日作っていた3本を、今日のデモで説明しやすい形に整理しました。
+            `Demo Pointer Pro` は即実演向け、`TimeCard Pro` はローカル動作＋連携説明向け、
+            `Meeting Extension` は要件プレビュー版として見せる構成です。
+          </p>
+          <div class="hero-notes">
+            <span class="pill">2本は実際に読み込み可能</span>
+            <span class="pill">1本はプレビュー版を追加</span>
+            <span class="pill">ZIP配布を同梱</span>
+          </div>
+        </div>
+        <div class="board">
+          <div class="board-grid">
+            <div class="board-item">
+              <span class="status ok">Ready To Demo</span>
+              <strong>Demo Pointer Pro</strong>
+              <p>描画、スポットライト、録画までその場で見せられる。</p>
+            </div>
+            <div class="board-item">
+              <span class="status mid">Ready With Notes</span>
+              <strong>TimeCard Pro</strong>
+              <p>ローカルのタイマー機能はそのまま実演可能。Google連携は設定前提。</p>
+            </div>
+            <div class="board-item">
+              <span class="status wait">Preview Build</span>
+              <strong>Meeting Extension</strong>
+              <p>要件書ベース。今回は紹介ページとプレビュー導線を追加。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-kicker">Packages</div>
+        <h2>配布と説明ページ</h2>
+        <p>各拡張の紹介ページとZIPをここから開けます。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <span class="status ok">Ready</span>
+          <h3>Demo Pointer Pro</h3>
+          <p>今日いちばん見せやすい実演向け拡張です。</p>
+          <div class="action-row">
+            <a class="btn primary" href="./demo-extension/showcase.html">紹介ページ</a>
+            <a class="btn" href="./dist/demo-extension.zip">ZIP</a>
+          </div>
+        </article>
+        <article class="card">
+          <span class="status mid">Ready</span>
+          <h3>TimeCard Pro</h3>
+          <p>単体タイマーは利用可能、外部連携は設定前提です。</p>
+          <div class="action-row">
+            <a class="btn primary" href="./timecard-extension/showcase.html">紹介ページ</a>
+            <a class="btn" href="./dist/timecard-extension.zip">ZIP</a>
+          </div>
+        </article>
+        <article class="card">
+          <span class="status wait">Preview</span>
+          <h3>Meeting Extension</h3>
+          <p>プレビュー版として読み込み可能にし、要件書へ遷移できます。</p>
+          <div class="action-row">
+            <a class="btn primary" href="./meeting-extension/showcase.html">紹介ページ</a>
+            <a class="btn" href="./dist/meeting-extension.zip">ZIP</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-kicker">Install</div>
+        <h2>Chromeで使う手順</h2>
+        <p>ZIPは共有用です。実際に読み込むときは解凍して `Load unpacked` を使います。</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <strong>01</strong>
+          <p>Chromeで `chrome://extensions` を開き、右上の「デベロッパーモード」をONにします。</p>
+        </div>
+        <div class="step">
+          <strong>02</strong>
+          <p>各ZIPを解凍するか、そのまま作業フォルダの `demo-extension` `timecard-extension` `meeting-extension` を使います。</p>
+        </div>
+        <div class="step">
+          <strong>03</strong>
+          <p>「パッケージ化されていない拡張機能を読み込む」から対象フォルダを選びます。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-kicker">Demo Order</div>
+        <h2>今日の順番</h2>
+        <p>この順で進めると、見せられるものと未実装が自然に整理できます。</p>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <h3>1. Demo Pointer Pro</h3>
+          <ul>
+            <li>ショートカットでツールバー表示</li>
+            <li>スポットライトや描画を見せる</li>
+            <li>録画フローまで触れる</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>2. TimeCard Pro</h3>
+          <ul>
+            <li>クライアント選択と開始停止</li>
+            <li>設定画面の厚みを見せる</li>
+            <li>Google / Slack連携は設定前提で説明</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>3. Meeting Extension</h3>
+          <ul>
+            <li>紹介ページで全体像を説明</li>
+            <li>要件書で設計の深さを補足</li>
+            <li>次フェーズの実装候補として締める</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      この一覧ページを最初に開いておけば、デモ前の迷いが減ります。
+      実演は `Demo Pointer Pro` を中心に、`TimeCard Pro` を補強、`Meeting Extension` は将来像として扱うのが一番安定です。
+    </footer>
+  </div>
+</body>
+</html>

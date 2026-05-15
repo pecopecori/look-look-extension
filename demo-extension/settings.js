@@ -87,8 +87,6 @@ function applySettingsToForm(settings) {
   document.getElementById('magnifierEnabled').checked = settings.magnifierEnabled;
   document.getElementById('keystrokeEnabled').checked = settings.keystrokeEnabled;
   document.getElementById('rememberToolbarPosition').checked = settings.rememberToolbarPosition;
-  document.getElementById('recordUseMic').checked = settings.recorder.includeMic;
-  document.getElementById('filenamePrefix').value = settings.recorder.filenamePrefix;
   syncColorPicker();
   syncStrokeOptions();
 }
@@ -105,10 +103,6 @@ async function onSubmit(event) {
     magnifierEnabled: document.getElementById('magnifierEnabled').checked,
     keystrokeEnabled: document.getElementById('keystrokeEnabled').checked,
     rememberToolbarPosition: document.getElementById('rememberToolbarPosition').checked,
-    recorder: {
-      includeMic: document.getElementById('recordUseMic').checked,
-      filenamePrefix: document.getElementById('filenamePrefix').value.trim() || STORAGE.DEFAULT_SETTINGS.recorder.filenamePrefix,
-    },
   };
 
   const saved = await STORAGE.saveSettings(next);

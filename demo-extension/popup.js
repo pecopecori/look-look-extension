@@ -22,10 +22,7 @@ chrome.storage.local.get('demo-ext-theme', (result) => {
 });
 
 const toggleBtn = document.getElementById('toggleToolbar');
-const recordBtn = document.getElementById('startRecord');
 const settingsBtn = document.getElementById('openSettings');
-const recordButtonLabel = document.getElementById('recordButtonLabel');
-const recordStatus = document.getElementById('recordStatus');
 
 toggleBtn.addEventListener('click', async () => {
   const res = await chrome.runtime.sendMessage({ type: 'POPUP_TOGGLE_TOOLBAR' });
@@ -36,34 +33,16 @@ toggleBtn.addEventListener('click', async () => {
   window.close();
 });
 
-recordBtn.addEventListener('click', async () => {
-  await chrome.runtime.sendMessage({ type: 'POPUP_TOGGLE_RECORDING' });
-  window.close();
-});
-
 settingsBtn.addEventListener('click', () => {
   chrome.runtime.openOptionsPage();
 });
 
-void refreshState();
 void refreshShortcuts();
-
-async function refreshState() {
-  const res = await chrome.runtime.sendMessage({ type: 'POPUP_GET_STATE' });
-  const status = res?.recorder?.status || 'idle';
-  const isRecording = status === 'recording' || status === 'starting';
-
-  recordButtonLabel.textContent = isRecording ? '録画を停止する' : '録画パネルを開く';
-  recordStatus.textContent = isRecording ? '録画中です。押すと停止します' : '録画は停止中です';
-  recordStatus.classList.toggle('recording', isRecording);
-}
 
 async function refreshShortcuts() {
   const commands = await chrome.commands.getAll();
   const toolbar = commands.find((c) => c.name === 'toggle-toolbar');
-  const recording = commands.find((c) => c.name === 'toggle-recording');
   document.getElementById('shortcutToolbar').textContent = formatShortcut(toolbar?.shortcut);
-  document.getElementById('shortcutRecording').textContent = formatShortcut(recording?.shortcut);
 }
 
 function formatShortcut(s) {
@@ -80,7 +59,7 @@ function showError(msg) {
     el = document.createElement('div');
     el.id = 'popupError';
     el.style.cssText = 'margin:0 14px 12px;padding:8px 12px;background:rgba(203,84,87,0.1);border:1.5px solid rgba(203,84,87,0.3);border-radius:10px;color:#CB5457;font-size:11px;font-weight:700;';
-    document.querySelector('.app').insertBefore(el, document.querySelector('.status-card'));
+    document.querySelector('.app').insertBefore(el, document.querySelector('.hint'));
   }
   el.textContent = msg;
 }

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⏱ TimeCard Pro 構想｜タイムカード × カレンダー × タスク管理</title>
+<style>
+  :root {
+    --pink:    #FADADD;
+    --mint:    #D6EFE9;
+    --blue:    #DCE9F7;
+    --purple:  #E8DFF5;
+    --yellow:  #FBEFD1;
+    --peach:   #FCE4D4;
+    --gray:    #F4F1EC;
+    --text:    #5B5148;
+    --text-sub:#8A7F74;
+    --accent:  #C49BB4;
+    --accent-d:#9B7A92;
+    --bg:      #FFF9F5;
+    --card:    #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Hiragino Maru Gothic ProN', 'Hiragino Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .hero {
+    background: linear-gradient(135deg, #FADADD, #FCE4D4 30%, #FBEFD1 55%, #D6EFE9 80%, #DCE9F7);
+    border-radius: 24px;
+    padding: 44px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 24px rgba(196, 155, 180, 0.15);
+  }
+  .hero h1 { margin: 0 0 12px; font-size: 28px; color: #6B4F62; letter-spacing: 0.04em; }
+  .hero p { margin: 0; color: #7A6072; font-size: 14px; }
+  .badge-row {
+    display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap;
+  }
+  .badge {
+    background: rgba(255,255,255,0.75);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #7D6B7A;
+  }
+
+  .tabs {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(255, 249, 245, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 12px 0;
+    margin-bottom: 20px;
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 2px 12px rgba(139, 120, 130, 0.06);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .tab-btn {
+    background: white;
+    border: 1.5px solid #EFE6DB;
+    color: var(--text-sub);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-weight: 600;
+  }
+  .tab-btn:hover { background: var(--pink); color: #8A5566; }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-d));
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(196, 155, 180, 0.3);
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  h2.panel-title {
+    margin: 10px 0 16px;
+    padding: 14px 20px;
+    background: var(--purple);
+    border-radius: 14px;
+    color: #5F4E66;
+    font-size: 19px;
+  }
+  h2.panel-title.pink   { background: var(--pink);   color: #8A5566; }
+  h2.panel-title.mint   { background: var(--mint);   color: #3F6A5F; }
+  h2.panel-title.blue   { background: var(--blue);   color: #4A6B8A; }
+  h2.panel-title.yellow { background: var(--yellow); color: #8A7044; }
+  h2.panel-title.peach  { background: var(--peach);  color: #8A5A2E; }
+
+  .intro {
+    background: white;
+    border-radius: 18px;
+    padding: 22px 26px;
+    margin: 14px 0;
+    box-shadow: 0 4px 14px rgba(139, 120, 130, 0.06);
+    font-size: 14px;
+  }
+  .intro strong { color: var(--accent-d); }
+
+  /* 3機能の合体図 */
+  .combo-map {
+    background: linear-gradient(135deg, #FFF, #FDF5F7);
+    border-radius: 22px;
+    padding: 28px 32px;
+    margin: 16px 0;
+    box-shadow: 0 6px 20px rgba(196, 155, 180, 0.15);
+    border: 2px solid var(--pink);
+  }
+  .combo-row {
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr 50px 1fr;
+    gap: 8px;
+    align-items: center;
+    margin: 20px 0;
+  }
+  .combo-box {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(139, 120, 130, 0.07);
+    border-top: 4px solid var(--accent);
+    font-size: 13px;
+  }
+  .combo-box.now { border-top-color: #7FB0A5; }
+  .combo-box.new1 { border-top-color: #8AA8C8; }
+  .combo-box.new2 { border-top-color: #E5A77F; }
+  .combo-box.new3 { border-top-color: #B399C8; }
+  .combo-box .icon { font-size: 30px; display: block; margin-bottom: 6px; }
+  .combo-box h5 { margin: 0 0 4px; font-size: 14px; color: var(--accent-d); }
+  .combo-box p { margin: 0; font-size: 11px; color: var(--text-sub); line-height: 1.4; }
+  .plus {
+    font-size: 24px;
+    text-align: center;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* 機能タイル */
+  .feature-card {
+    background: white;
+    border-radius: 18px;
+    padding: 22px 26px;
+    margin: 14px 0;
+    box-shadow: 0 4px 14px rgba(139, 120, 130, 0.06);
+    border-left: 6px solid var(--accent);
+  }
+  .feature-card.now { border-left-color: #7FB0A5; }
+  .feature-card.new1 { border-left-color: #8AA8C8; }
+  .feature-card.new2 { border-left-color: #E5A77F; }
+  .feature-card.new3 { border-left-color: #B399C8; }
+  .feature-card h3 { margin: 0 0 8px; color: var(--accent-d); }
+
+  .ui-mock {
+    background: #FBF6F0;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 14px 0;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 12.5px;
+    color: #6B5B4F;
+    white-space: pre-wrap;
+    line-height: 1.7;
+  }
+  .ui-mock-title {
+    font-family: 'Hiragino Maru Gothic ProN', sans-serif;
+    font-size: 12px;
+    color: var(--accent-d);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .flow-step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    align-items: start;
+    background: white;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(139, 120, 130, 0.05);
+  }
+  .flow-step .step-num {
+    background: linear-gradient(135deg, var(--accent), var(--accent-d));
+    color: white;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .flow-step h4 { margin: 0 0 4px; color: var(--accent-d); font-size: 15px; }
+  .flow-step p { margin: 0; font-size: 13px; color: var(--text); }
+
+  .pain-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .pain-card {
+    background: #FFF1E8;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #8A6550;
+  }
+  .pain-card strong { display: block; color: #6B4520; margin-bottom: 4px; }
+
+  .price-card {
+    background: linear-gradient(135deg, #FFF, #FDF5F7);
+    border-radius: 18px;
+    padding: 24px 28px;
+    margin: 14px 0;
+    box-shadow: 0 4px 14px rgba(196, 155, 180, 0.12);
+    border: 2px solid var(--pink);
+    text-align: center;
+  }
+  .price-card .price-tag {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent-d);
+    margin: 8px 0;
+  }
+  .price-card .price-sub {
+    font-size: 13px;
+    color: var(--text-sub);
+  }
+
+  .price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin: 14px 0;
+  }
+  .price-option {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 3px 12px rgba(139, 120, 130, 0.07);
+    border-top: 5px solid var(--accent);
+  }
+  .price-option.basic { border-top-color: #7FB0A5; }
+  .price-option.pro { border-top-color: #E5A0B5; }
+  .price-option.premium { border-top-color: #D8B870; }
+  .price-option .opt-name { font-size: 14px; color: var(--text-sub); margin-bottom: 6px; }
+  .price-option .opt-price { font-size: 26px; font-weight: 700; color: var(--accent-d); margin-bottom: 10px; }
+  .price-option ul { margin: 8px 0 0; padding-left: 18px; font-size: 12.5px; line-height: 1.7; }
+
+  .tldr {
+    background: var(--yellow);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin: 14px 0;
+    color: #7A5F2F;
+  }
+  .tldr strong { color: #5A4520; }
+  .tldr ol, .tldr ul { margin: 8px 0 0; padding-left: 22px; }
+  .tldr li { margin: 4px 0; font-size: 14px; }
+
+  .tip-green {
+    background: var(--mint);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #3F6A5F;
+  }
+  .tip-green::before { content: "🌱 "; }
+
+  footer {
+    text-align: center;
+    margin-top: 50px;
+    color: var(--text-sub);
+    font-size: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .tabs { padding: 10px 8px; gap: 6px; }
+    .tab-btn { padding: 7px 12px; font-size: 12px; }
+    .hero h1 { font-size: 22px; }
+    .combo-row { grid-template-columns: 1fr; }
+    .plus { display: none; }
+    .flow-step { grid-template-columns: 60px 1fr; gap: 12px; }
+    .flow-step .step-num { width: 52px; height: 52px; font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>⏱ TimeCard Pro 構想</h1>
+  <p>既存のタイムカード × Googleカレンダー × 空き時間 × タスク管理<br>すべてを1つに合体させる新プロダクト案🌸</p>
+  <div class="badge-row">
+    <span class="badge">⭐ 既存拡張ベース</span>
+    <span class="badge">➕ 3機能追加</span>
+    <span class="badge">💰 価格上げる余地あり</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="overview">💎 全体像</button>
+  <button class="tab-btn" data-tab="calendar">➕ ①カレンダー連携</button>
+  <button class="tab-btn" data-tab="freetime">➕ ②空き時間</button>
+  <button class="tab-btn" data-tab="task">➕ ③タスク管理</button>
+  <button class="tab-btn" data-tab="flow">🌊 1日の使い方</button>
+  <button class="tab-btn" data-tab="price">💰 価格戦略</button>
+</div>
+
+<!-- =================== 💎 全体像 =================== -->
+<div class="tab-panel active" id="tab-overview">
+  <h2 class="panel-title pink">💎 全体像｜TimeCardを「秘書のすべて」にする</h2>
+  <div class="intro">
+    今のタイムカードは「<strong>時間計測ツール</strong>」止まり。<br>
+    そこに「カレンダー」「空き時間」「タスク」を足すと、オンライン秘書の<strong>業務まるごとが1つで完結</strong>するプロダクトになる🌸
+  </div>
+
+  <div class="combo-map">
+    <h3 style="margin: 0 0 8px; text-align: center; color: var(--accent-d);">🌷 4つの機能を1つに合体</h3>
+    <p style="text-align: center; margin: 0 0 16px; font-size: 13px; color: var(--text-sub);">既存のTimeCardを核に、3機能を足して「秘書のスイス・アーミーナイフ」化</p>
+
+    <div class="combo-row">
+      <div class="combo-box now">
+        <span class="icon">⏱</span>
+        <h5>① 既存 TimeCard</h5>
+        <p>作業時間計測・収益・クライアント別</p>
+      </div>
+      <div class="plus">＋</div>
+      <div class="combo-box new1">
+        <span class="icon">📅</span>
+        <h5>② カレンダー連携</h5>
+        <p>作業ログをGoogleカレンダーに自動投入</p>
+      </div>
+      <div class="plus">＋</div>
+      <div class="combo-box new2">
+        <span class="icon">🕒</span>
+        <h5>③ 空き時間ワンクリック</h5>
+        <p>「来週空いてますか？」に即答</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; font-size: 28px; color: var(--accent); margin: 8px 0;">＋</div>
+
+    <div style="display: flex; justify-content: center;">
+      <div class="combo-box new3" style="max-width: 320px;">
+        <span class="icon">✅</span>
+        <h5>④ クライアント別タスク管理</h5>
+        <p>プルダウンでクライアント選択 → そのタスク一覧表示・選んだら自動でTimeCardスタート</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="panel-title yellow" style="margin-top: 30px;">😩 解決するユーザーの痛み</h2>
+  <div class="pain-row">
+    <div class="pain-card">
+      <strong>痛み①</strong>
+      タイムカードは記録できるけど、後でカレンダーやスプシに転記してる
+    </div>
+    <div class="pain-card">
+      <strong>痛み②</strong>
+      「来週いつ空いてますか？」のメールに毎回カレンダー開いて確認してる
+    </div>
+    <div class="pain-card">
+      <strong>痛み③</strong>
+      クライアントごとのタスク管理がNotionやSlackに散らばってる
+    </div>
+    <div class="pain-card">
+      <strong>痛み④</strong>
+      「今日何やる？」を見るためにツールを3つ開いてる
+    </div>
+  </div>
+
+  <div class="tip-green">
+    <strong>差別化ポイント：</strong>個別の機能は既製品にあるけど、「タイムカード × カレンダー × タスク × クライアント別」を1つにまとめた製品は<strong>たぶん日本にない</strong>。ここが勝ち筋🌸
+  </div>
+</div>
+
+<!-- =================== ➕ ①カレンダー連携 =================== -->
+<div class="tab-panel" id="tab-calendar">
+  <h2 class="panel-title blue">📅 追加機能①｜Googleカレンダー連携</h2>
+  <div class="intro">
+    タイムカードで「終了」を押した瞬間に、<strong>Googleカレンダーに作業履歴が自動で記録</strong>される。月末のクライアント別集計予定もまとめて自動生成🌷
+  </div>
+
+  <div class="feature-card new1">
+    <h3>🎯 こんな動きをする</h3>
+    <ul>
+      <li>「開始」→「終了」を押すと、<strong>その時間帯にカレンダー予定を自動作成</strong></li>
+      <li>クライアント別に<strong>カラーが自動で変わる</strong>（A社=ピンク、B社=ブルーなど）</li>
+      <li>予定タイトルは「⏱ A社｜会議資料作成」のように自動整形</li>
+      <li>毎月末に<strong>「📊 ◯月集計：A社 12h / B社 8h / C社 5h」サマリ予定</strong>を自動投入</li>
+    </ul>
+  </div>
+
+  <div class="ui-mock">
+<span class="ui-mock-title">📅 Googleカレンダー上の表示イメージ</span>
+  ┌─────────────────────────────────┐
+  │ 月    火    水    木    金       │
+  ├─────────────────────────────────┤
+  │ 🌸A社  🌸A社  🌷B社  🌸A社  🌼C社│ ← 各クライアント色分け
+  │ 10-12  9-11   13-15  14-16  10-12 │
+  │ 資料   面談   納品   修正   月次  │
+  └─────────────────────────────────┘
+
+  📊 5月集計（月末自動投入）
+  ・A社 : 12h ¥36,000
+  ・B社 :  8h ¥24,000
+  ・C社 :  5h ¥15,000
+  合計   25h ¥75,000
+  </div>
+
+  <div class="feature-card new1">
+    <h3>💡 ぺこさんの「掛け合わせ」が刺さる理由</h3>
+    <p>タイムカードで時間を測ってるのに、結局あとでカレンダーに「A社で働いた日」を別で書いてる人がいっぱいいる。<br><strong>1回の操作でタイムカード＋カレンダー両方に記録</strong>されるなら、それだけで500円どころか1500円でも欲しい人がいる🌸</p>
+  </div>
+</div>
+
+<!-- =================== ➕ ②空き時間 =================== -->
+<div class="tab-panel" id="tab-freetime">
+  <h2 class="panel-title peach">🕒 追加機能②｜空き時間ワンクリック</h2>
+  <div class="intro">
+    「来週いつ空いてますか？」のメールに、<strong>ボタン1つで返信用テキストを生成</strong>。タイムカード画面の上部に「空き時間」ボタンを置くだけ。
+  </div>
+
+  <div class="feature-card new2">
+    <h3>🎯 こんな動きをする</h3>
+    <ul>
+      <li>TimeCardのポップアップに「<strong>📅 空き時間を見る</strong>」ボタンを追加</li>
+      <li>クリックすると、Googleカレンダーを参照して<strong>今週/来週の空き時間を一覧</strong></li>
+      <li><strong>「コピー」ボタン</strong>でメール返信用テキスト形式に整形 → ペーストで即送れる</li>
+      <li>「平日10-18時のみ」など条件設定可能</li>
+    </ul>
+  </div>
+
+  <div class="ui-mock">
+<span class="ui-mock-title">🕒 空き時間ボタンを押すと…</span>
+  ┌──────────────────────────────┐
+  │ 📅 5/19週の空き時間             │
+  ├──────────────────────────────┤
+  │ 月 5/19 : 10:00-12:00, 14-17  │
+  │ 火 5/20 : 終日空き             │
+  │ 水 5/21 : 13:00-18:00          │
+  │ 木 5/22 : 10:00-15:00          │
+  │ 金 5/23 : 11:00-13:00, 16-18  │
+  ├──────────────────────────────┤
+  │  [📋 コピー]   [⚙ 条件変更]   │
+  └──────────────────────────────┘
+
+  ▼ [コピー]で生成されるテキスト ▼
+
+  以下の時間帯でしたらご都合いかがでしょうか🌷
+  ・5/19(月) 10:00〜12:00 / 14:00〜17:00
+  ・5/20(火) 終日
+  ・5/21(水) 13:00〜18:00
+  ・5/22(木) 10:00〜15:00
+  ・5/23(金) 11:00〜13:00 / 16:00〜18:00
+  </div>
+
+  <div class="feature-card new2">
+    <h3>💡 既製品（Calendly）との差別化</h3>
+    <p>Calendlyは「予約リンクを送る」スタイル。でも日本の秘書業務では<strong>「メール文中に空き時間を書く」</strong>のが圧倒的に多い。<br>その層は<strong>Calendlyを使わない（=既製品の代替がない領域）</strong>。ここに刺さる🌸</p>
+  </div>
+</div>
+
+<!-- =================== ➕ ③タスク管理 =================== -->
+<div class="tab-panel" id="tab-task">
+  <h2 class="panel-title purple">✅ 追加機能③｜クライアント別タスク管理</h2>
+  <div class="intro">
+    プルダウンでクライアントを選ぶと、<strong>そのクライアントのタスク一覧</strong>が表示される。タスクを選んでクリックすると、<strong>TimeCardが自動でその案件名で時間計測スタート</strong>🌷
+  </div>
+
+  <div class="feature-card new3">
+    <h3>🎯 こんな動きをする</h3>
+    <ul>
+      <li>TimeCardポップアップに<strong>「クライアント選択プルダウン」</strong>を設置</li>
+      <li>プルダウンで選ぶと、そのクライアントのタスクリストが下に表示</li>
+      <li>「⚪ 議事録まとめ」「⚪ 資料作成」「⚪ メール返信」など</li>
+      <li>タスクをクリック → <strong>自動でその案件名でTimeCardスタート</strong></li>
+      <li>完了したらチェックを付けると、カレンダーにも「✓ 議事録まとめ完了」予定が自動投入</li>
+    </ul>
+  </div>
+
+  <div class="ui-mock">
+<span class="ui-mock-title">✅ クライアント別タスクメニューUI案</span>
+  ┌──────────────────────────────┐
+  │ ⏱ TimeCard                   │
+  ├──────────────────────────────┤
+  │ クライアント                  │
+  │ ┌─────────────────────┐    │
+  │ │ 🌸 A社             ▼ │    │
+  │ └─────────────────────┘    │
+  ├──────────────────────────────┤
+  │ 📋 A社のタスク                │
+  │ ⚪ 議事録まとめ         [▶] │
+  │ ⚪ 5月レポート作成      [▶] │
+  │ ☑ Twitter投稿          完了 │
+  │ ⚪ 経費精算            [▶] │
+  │                               │
+  │ [＋ タスクを追加]              │
+  └──────────────────────────────┘
+
+  「▶」を押すと → そのタスク名でTimeCard自動スタート
+  </div>
+
+  <div class="feature-card new3">
+    <h3>💡 これが一番強い理由</h3>
+    <p>TodoistやNotionで「タスク管理」はできる。でも<strong>「タスク選んだら自動で時間計測スタートして、終わったらカレンダーにも記録される」</strong>のは既製品にない。<br>これがあると、秘書の業務動線が<strong>完全に1ストリーム</strong>になる🌸</p>
+  </div>
+</div>
+
+<!-- =================== 🌊 1日の使い方 =================== -->
+<div class="tab-panel" id="tab-flow">
+  <h2 class="panel-title mint">🌊 これがあると1日がこうなる</h2>
+  <div class="intro">
+    <strong>朝開いて → 1日終わる</strong>まで、TimeCard Pro一つで完結する世界観🌷
+  </div>
+
+  <div class="flow-step">
+    <div class="step-num">朝</div>
+    <div>
+      <h4>9:00 仕事スタート</h4>
+      <p>TimeCard開く → プルダウンで「A社」選択 → タスク一覧から「議事録まとめ」を選んで「▶」<br>→ <strong>勝手に時間計測スタート</strong></p>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="step-num">昼</div>
+    <div>
+      <h4>11:30 タスク完了</h4>
+      <p>「終了」ボタン → <strong>Googleカレンダーに「🌸A社｜議事録まとめ 9:00-11:30」が自動投入</strong><br>→ 月次の集計時間も自動更新</p>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="step-num">昼後</div>
+    <div>
+      <h4>14:00 クライアントから「来週空いてる？」メール</h4>
+      <p>TimeCardの<strong>「📅 空き時間」ボタン</strong> → 来週の空き時間が一覧表示 → 「コピー」で整形済みテキスト → メールにペーストして返信完了（30秒）</p>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="step-num">夕</div>
+    <div>
+      <h4>17:00 別案件に切替</h4>
+      <p>プルダウンを「B社」に → 別のタスク選択 → 計測スタート<br>→ <strong>カレンダー色が自動でブルーに切り替わる</strong></p>
+    </div>
+  </div>
+
+  <div class="flow-step">
+    <div class="step-num">夜</div>
+    <div>
+      <h4>22:00 終了</h4>
+      <p>「今月合計」を見るとA社 12h / B社 8h…<br>→ <strong>月末はそのまま請求書のベース</strong>になる（集計予定もカレンダー入ってる）</p>
+    </div>
+  </div>
+
+  <div class="tldr">
+    <strong>🌟 この1日を体験したユーザーの感想（想定）</strong>
+    <ul>
+      <li>「Notion・Googleカレンダー・タイムカード3つ開いてたのが、これ1個で済む」</li>
+      <li>「クライアントから空き時間聞かれてもボタンひとつで答えられる」</li>
+      <li>「請求書作成のために月末に時間集計してたのが、もう要らない」</li>
+      <li>「クライアント別の色分けがあると、自分の働き方が見える」</li>
+    </ul>
+  </div>
+</div>
+
+<!-- =================== 💰 価格戦略 =================== -->
+<div class="tab-panel" id="tab-price">
+  <h2 class="panel-title yellow">💰 価格戦略｜500円 → いくらまで上げられる？</h2>
+  <div class="intro">
+    既存のTimeCardは500円想定。でも<strong>3機能足して1ストリーム化</strong>するなら、価格は上げて大丈夫🌸<br>3パターンの価格戦略を提示。
+  </div>
+
+  <div class="price-grid">
+    <div class="price-option basic">
+      <div class="opt-name">Basic</div>
+      <div class="opt-price">¥500</div>
+      <p style="font-size: 13px; color: var(--text-sub); margin: 0 0 8px;">既存TimeCardの値段そのまま。新機能ぜんぶ込み。</p>
+      <ul>
+        <li>★ とにかく数を売る戦略</li>
+        <li>★ 既存購入者は無料アップグレード</li>
+        <li>★ 口コミで広がりやすい</li>
+      </ul>
+    </div>
+
+    <div class="price-option pro">
+      <div class="opt-name">Pro（おすすめ）</div>
+      <div class="opt-price">¥1,500</div>
+      <p style="font-size: 13px; color: var(--text-sub); margin: 0 0 8px;">3機能追加で3倍の価値。妥当な値上げ。</p>
+      <ul>
+        <li>★ 機能の価値に見合った価格</li>
+        <li>★ 既存購入者は500円で差分アップグレード</li>
+        <li>★ 「単機能じゃない安心感」で説得力UP</li>
+      </ul>
+    </div>
+
+    <div class="price-option premium">
+      <div class="opt-name">Premium</div>
+      <div class="opt-price">¥2,980</div>
+      <p style="font-size: 13px; color: var(--text-sub); margin: 0 0 8px;">秘書スクール・コミュニティでバンドル販売。</p>
+      <ul>
+        <li>★ サポート＋テンプレ＋動画付き</li>
+        <li>★ 「導入で月10時間削減」をLPで訴求</li>
+        <li>★ 高単価層向けに少数販売</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="panel-title pink" style="margin-top: 30px;">🌸 ぺこさんへのおすすめ展開</h2>
+
+  <div class="price-card">
+    <div class="opt-name" style="font-size: 14px; color: var(--text-sub);">推奨フロー</div>
+    <h3 style="color: var(--accent-d); margin: 8px 0;">「Basic ¥500 で広めて → Pro ¥1,500 にアップグレード路線」</h3>
+    <p style="font-size: 13px; color: var(--text); margin: 0;">
+      まず<strong>Basic¥500</strong>を口コミで広げる🌸<br>
+      ある程度ユーザーが付いたら、追加機能を「<strong>Pro版¥1,500</strong>」として案内。<br>
+      既存ユーザーは¥1,000の差額でアップグレードできるから損した気がしない。
+    </p>
+  </div>
+
+  <div class="tldr">
+    <strong>🎯 売り方の現実的なロードマップ</strong>
+    <ol>
+      <li>まず<strong>既存TimeCardに「カレンダー連携」だけ追加</strong>してアップデート（既存顧客還元）</li>
+      <li>反応を見て<strong>「空き時間ワンクリック」も追加</strong>（ここで¥1,000に値上げ）</li>
+      <li>最後に<strong>「タスク管理」を追加してPro版¥1,500</strong>として正式リリース</li>
+      <li>段階的だから、新機能追加のたびにSNSで話題化できる🌸</li>
+    </ol>
+  </div>
+
+  <div class="tip-green">
+    機能を全部いっぺんに足さず、<strong>1ヶ月に1機能ペースで段階アップデート</strong>すると、毎月「新機能つきました！」とSNSで投稿できて、定期的に新規ユーザーが流入する流れができる🌷
+  </div>
+
+  <div style="background: var(--purple); border-radius: 14px; padding: 18px 22px; margin: 16px 0; color: #5F4E66;">
+    <strong>💎 ぺこさんへの提案まとめ</strong>
+    <p style="margin: 8px 0 0; font-size: 14px;">
+      この3機能の掛け合わせは<strong>「秘書のスイス・アーミーナイフ」</strong>になる絶対値の高いアイデアです🌸<br>
+      Basic ¥500 のまま機能だけ盛るのもアリだし、Pro版 ¥1,500 に上げても秘書層は買います。<br>
+      まずはMVPとして「①カレンダー連携」から作ってみるのが現実的かなと🌷
+    </p>
+  </div>
+</div>
+
+<footer>
+  ⏱ TimeCard Pro 構想 &nbsp;|&nbsp; 既存タイムカード × カレンダー × 空き時間 × タスク管理
+</footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + target).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Extension — 要件定義書（Chrome拡張完結版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:    #FAF4EE;
+  --cream2:   #FFFEF9;
+  --white:    #ffffff;
+
+  --mint:     #A8C9C4;
+  --mint-dk:  #6EAAA4;
+  --pink:     #E8B5B0;
+  --pink-dk:  #C88076;
+  --sand:     #D4A574;
+  --sand-dk:  #8F6140;
+
+  --mint-lt:  rgba(168,201,196,0.18);
+  --pink-lt:  rgba(232,181,176,0.18);
+  --mint-bd:  rgba(168,201,196,0.35);
+  --pink-bd:  rgba(232,181,176,0.40);
+
+  --text:     #3D3530;
+  --text-sm:  #9B8880;
+  --text-xs:  #B9ABA3;
+
+  --radius:   14px;
+  --radius-lg:20px;
+  --shadow-sm:0 2px 12px rgba(61,53,48,0.05);
+  --shadow:   0 4px 20px rgba(61,53,48,0.07);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--cream);
+  color: var(--text);
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── BLOB decorations ── */
+.blob-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.blob { position: absolute; opacity: 0.35; }
+.blob-tl { top: -120px; left: -100px; width: 360px; height: 320px; background: var(--mint); border-radius: 42% 58% 62% 38% / 48% 44% 56% 52%; }
+.blob-tr { top: -80px; right: -110px; width: 380px; height: 340px; background: var(--pink); border-radius: 60% 40% 38% 62% / 56% 62% 38% 44%; }
+.blob-mid { top: 45%; left: -120px; width: 240px; height: 220px; background: var(--mint); border-radius: 62% 38% 48% 52% / 44% 56% 44% 56%; opacity: 0.18; }
+.blob-mid-r { top: 70%; right: -100px; width: 260px; height: 240px; background: var(--pink); border-radius: 48% 52% 62% 38% / 56% 44% 56% 44%; opacity: 0.18; }
+
+header {
+  position: relative;
+  z-index: 1;
+  padding: 60px 52px 44px;
+  background: linear-gradient(135deg, rgba(168,201,196,0.15), rgba(232,181,176,0.15));
+  border-bottom: 1.5px solid var(--mint-bd);
+}
+header .doc-meta {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--mint), var(--pink));
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+header h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  line-height: 1.3;
+}
+header h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--mint-dk), var(--pink-dk));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+header p.lead {
+  color: var(--text-sm);
+  margin-top: 14px;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  max-width: 840px;
+}
+.tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+.tag {
+  border: 1.5px solid var(--mint-bd);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-sm);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 52px 80px;
+}
+
+.sh { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+.sh-num {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--mint-lt), var(--pink-lt));
+  border: 2px solid var(--mint-bd);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 900;
+  color: var(--mint-dk);
+  flex-shrink: 0;
+}
+.sh h2 { font-size: 1.2rem; font-weight: 900; color: var(--text); }
+.sh-line {
+  flex: 1; height: 2px;
+  background: linear-gradient(90deg, var(--mint-bd), transparent);
+  opacity: 0.6;
+}
+section { margin-bottom: 60px; }
+
+.callout {
+  background: var(--white);
+  border: 1.5px solid var(--mint-bd);
+  border-left: 5px solid var(--mint);
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-sm);
+}
+.callout.warn { border-left-color: var(--pink-dk); border-color: var(--pink-bd); }
+.callout.info { border-left-color: var(--mint-dk); }
+.callout.idea { border-left-color: var(--pink); border-color: var(--pink-bd); }
+.callout h4 { font-size: 0.92rem; font-weight: 900; margin-bottom: 6px; color: var(--text); }
+.callout p, .callout li { font-size: 0.88rem; color: var(--text-sm); line-height: 1.8; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: var(--white);
+  border: 1.5px solid var(--mint-bd);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.card h3 { font-size: 0.98rem; font-weight: 900; margin-bottom: 10px; color: var(--text); line-height: 1.45; }
+.card .badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  margin-bottom: 10px;
+  letter-spacing: 0.06em;
+  background: var(--mint-lt);
+  color: var(--mint-dk);
+}
+.card .badge.must   { background: var(--pink-lt); color: var(--pink-dk); }
+.card .badge.should { background: rgba(212,165,116,0.18); color: var(--sand-dk); }
+.card .badge.may    { background: var(--mint-lt); color: var(--mint-dk); }
+.card p { font-size: 0.86rem; color: var(--text-sm); line-height: 1.8; }
+.card ul { margin-top: 10px; padding-left: 18px; }
+.card li { font-size: 0.82rem; color: var(--text-sm); margin-bottom: 4px; line-height: 1.7; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border: 1.5px solid var(--mint-bd);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-size: 0.86rem;
+  box-shadow: var(--shadow-sm);
+}
+th, td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--mint-lt);
+  vertical-align: top;
+}
+th {
+  background: linear-gradient(135deg, var(--mint-lt), var(--pink-lt));
+  font-weight: 900;
+  color: var(--text);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: rgba(168,201,196,0.04); }
+td.center { text-align: center; }
+td .ok  { color: var(--mint-dk); font-weight: 900; }
+td .ng  { color: var(--pink-dk); font-weight: 900; }
+td .mid { color: var(--sand-dk); font-weight: 900; }
+
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: var(--white);
+  border: 1.5px solid var(--mint-bd);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.flow-step {
+  flex: 1 1 180px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(168,201,196,0.10), rgba(232,181,176,0.10));
+  border: 1.5px solid var(--mint-bd);
+  border-radius: var(--radius);
+  position: relative;
+  transition: transform 0.2s;
+}
+.flow-step:hover { transform: translateY(-2px); }
+.flow-step .n {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, var(--mint), var(--pink));
+  padding: 2px 9px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+}
+.flow-step strong { font-size: 0.9rem; display: block; margin-bottom: 6px; color: var(--text); font-weight: 900; }
+.flow-step span { font-size: 0.8rem; color: var(--text-sm); line-height: 1.7; }
+
+pre {
+  background: var(--text);
+  color: #FAF4EE;
+  padding: 20px 22px;
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  box-shadow: var(--shadow-sm);
+}
+code.inline {
+  background: var(--mint-lt);
+  border: 1px solid var(--mint-bd);
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 0.82em;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  color: var(--mint-dk);
+  font-weight: 700;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px 28px;
+  background: var(--white);
+  border: 1.5px solid var(--mint-bd);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+}
+.kv dt {
+  font-size: 0.78rem;
+  color: var(--text-sm);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.kv dd { font-size: 0.9rem; color: var(--text); line-height: 1.8; }
+
+ul.bullet { margin-left: 22px; }
+ul.bullet li {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+ul.bullet li::marker { color: var(--mint-dk); }
+
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 32px 52px;
+  border-top: 1.5px solid var(--mint-bd);
+  background: var(--cream2);
+  color: var(--text-sm);
+  font-size: 0.78rem;
+  text-align: center;
+  font-weight: 700;
+}
+footer::before {
+  content: '🌿 🌸 🌿';
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="blob-layer" aria-hidden="true">
+  <div class="blob blob-tl"></div>
+  <div class="blob blob-tr"></div>
+  <div class="blob blob-mid"></div>
+  <div class="blob blob-mid-r"></div>
+</div>
+
+<header>
+  <div class="doc-meta">Requirements Definition · v1.2 · 2026-05-14 · Codex 2nd review reflected</div>
+  <h1>Meeting Extension — <em>Chrome拡張完結版</em> 要件定義書</h1>
+  <p class="lead">
+    ブラウザ上の会議（Meet / Zoom Web / Teams / 任意のタブ音声）をリアルタイムに録音し、
+    文字起こし → 議事録生成 → タスク抽出 → Google Docs / Calendar / Sheets 書き込み → PDF / スライド書き出し →
+    レポート / 分析画面まで、すべて Chrome 拡張機能内で完結させるツール。
+    既存の Mac 版 Meet パイプラインとは完全に別プロジェクトとして独立運用する。
+  </p>
+  <div class="tags">
+    <span class="tag">Chrome Extension MV3</span>
+    <span class="tag">tabCapture</span>
+    <span class="tag">getUserMedia</span>
+    <span class="tag">Whisper API / Google STT v2</span>
+    <span class="tag">Claude Sonnet 4.6</span>
+    <span class="tag">Google Docs / Calendar / Sheets</span>
+    <span class="tag">PDF / Slides Export</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══ 1. 背景・目的 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">1</div><h2>背景・目的</h2><div class="sh-line"></div></div>
+
+  <div class="callout idea">
+    <h4>このプロジェクトのモチベーション</h4>
+    <p>
+      既存の Mac 版 Meet パイプラインは「Drive に上がった録画ファイルを後処理する」前提だった。
+      <strong>本プロジェクトはそれとは別に</strong>、ブラウザを「ブラックホール」として使い、
+      会議中にタブ音声とマイク音声を <strong>その場で両方拾い、リアルタイムに処理する</strong> 拡張機能を作る。
+      Meet に限定されず、ブラウザで音が鳴る会議ツールならどれでも対応できる点が最大の差別化。
+    </p>
+  </div>
+
+  <dl class="kv">
+    <dt>新システム</dt>
+    <dd>Chrome 拡張機能（MV3）単体で録音〜出力〜分析まで完結</dd>
+    <dt>対象会議ツール</dt>
+    <dd>Google Meet / Zoom Web / Microsoft Teams Web / Discord Web / その他「ブラウザで音が鳴る」もの全般</dd>
+    <dt>既存 Mac 版との関係</dt>
+    <dd><strong>完全に切り離し</strong>。別プロジェクト・別ディレクトリ・別 OAuth クライアント・別台帳。データ共有なし。</dd>
+    <dt>非目標（v1 スコープ外）</dt>
+    <dd>商用配布 / Chrome Web Store 公開 / 複数ユーザー対応 / Workspace（法人）対応 / モバイル対応 / 真の話者分離（diarization）/ 録音ファイルのクラウド長期保存 / 120分超の自動分割 / 会議タブの URL 自動検出（v2 以降）</dd>
+    <dt>前提</dt>
+    <dd>会議中ずっと Mac が起動し、Chrome が開いており、対象タブが閉じられないこと。機密会議は対象外（運用ルールで除外）。</dd>
+  </dl>
+</section>
+
+<!-- ═══ 2. ワークフロー全体図 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">2</div><h2>ワークフロー全体図</h2><div class="sh-line"></div></div>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="n">STEP 1</div>
+      <strong>録音開始</strong>
+      <span>Popup の「このタブを録音」ボタンを押す。tabCapture（タブ音声）+ getUserMedia（マイク）の 2 トラック並列録音を開始。タイトル入力ダイアログを表示。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 2</div>
+      <strong>チャンク化</strong>
+      <span>60 秒ごとに MediaRecorder のチャンクを切り出し、IndexedDB に逐次保存。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 3</div>
+      <strong>逐次文字起こし</strong>
+      <span>チャンク単位で文字起こし API に送信。source_label（self / tab）付きで segments を蓄積。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 4</div>
+      <strong>録音停止</strong>
+      <span>会議終了 or 手動停止で全 segments を結合。フル原文を Side Panel に表示。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 5</div>
+      <strong>構造化</strong>
+      <span>Claude Sonnet 4.6 で議事録 / タスク / 改善点 / 決定事項を JSON 化。Side Panel にプレビュー。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 6</div>
+      <strong>承認</strong>
+      <span>手動モード = 1 件ずつ承認 / 自動モード = 全件 approved にして次へ。設定で切り替え。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 7</div>
+      <strong>Google 系書き込み</strong>
+      <span>Docs（原文 + 議事録 2 本） / Calendar（承認タスク） / Sheets（台帳 1 行）を拡張機能から直叩き。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 8</div>
+      <strong>書き出し</strong>
+      <span>議事録を PDF / スライド（pptx）に書き出し（任意）。ローカル DL or Drive 保存。</span>
+    </div>
+    <div class="flow-step">
+      <div class="n">STEP 9</div>
+      <strong>レポート / 分析</strong>
+      <span>過去ミーティング一覧 / 累積時間 / タスク完了率 / 頻出キーワード等を Report ページで可視化。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3. データフロー（送信先の定義） ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">3</div><h2>データフロー（送信先の定義）</h2><div class="sh-line"></div></div>
+
+  <div class="callout warn">
+    <h4>外部に出るデータと送信先を明示する</h4>
+    <p>v1 は個人前提でこの送信先を受容する。機密会議は本拡張の対象外とする。</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>データ種別</th>
+        <th>送信先</th>
+        <th>用途</th>
+        <th>保管期間</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>音声バイナリ（webm/wav）</td>
+        <td>文字起こし API（OpenAI Whisper または Google STT v2）</td>
+        <td>文字起こし</td>
+        <td>API 側ポリシーに従う</td>
+      </tr>
+      <tr>
+        <td>文字起こし本文（テキスト）</td>
+        <td>Anthropic Claude API / Google Docs（原文 Doc）</td>
+        <td>構造化 / 保管</td>
+        <td>Doc は無期限（ユーザー Drive 内）</td>
+      </tr>
+      <tr>
+        <td>議事録 JSON</td>
+        <td>Google Docs / Google Sheets / Google Drive（PDF/pptx 保存時）</td>
+        <td>保管 / 共有用</td>
+        <td>無期限（ユーザー Drive 内）</td>
+      </tr>
+      <tr>
+        <td>タスクメタデータ</td>
+        <td>Google Calendar / Google Sheets</td>
+        <td>スケジュール / 台帳</td>
+        <td>無期限</td>
+      </tr>
+      <tr>
+        <td>ミーティング状態 / 履歴 / 設定 / API キー</td>
+        <td>chrome.storage.local（端末ローカル）</td>
+        <td>状態管理 / 設定</td>
+        <td>無期限（ユーザー削除可）</td>
+      </tr>
+      <tr>
+        <td>音声チャンク（録音中の一時保存）</td>
+        <td>IndexedDB（端末ローカル）</td>
+        <td>リアルタイム録音バッファ</td>
+        <td>ミーティング終了後 7 日で自動削除</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 4. 機能要件 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">4</div><h2>機能要件（FR）</h2><div class="sh-line"></div></div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-01 タブ音声 + マイクの並列録音</h3>
+      <p>会議中のタブ音声とマイクを別トラックで同時録音。トラック由来ラベル（self=マイク / tab=タブ音声）を付与する。真の話者分離はしない。</p>
+      <ul>
+        <li>API: chrome.tabCapture / getUserMedia</li>
+        <li>場所: Offscreen Document</li>
+        <li>形式: WebM/Opus → 必要に応じて wav 変換</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-02 任意の会議ツール対応</h3>
+      <p>Meet / Zoom Web / Teams / Discord 等、特定ツールに限定せず「現在のタブ音声」を拾える。</p>
+      <ul>
+        <li>v1 は手動で「このタブを録音」ボタンのみ。URL 自動検出は v2 以降</li>
+        <li>tabCapture はユーザー操作起点でのみ開始できる MV3 制約を受容</li>
+        <li>タブの title / url 取得は <code class="inline">activeTab</code> 権限で録音開始時に 1 回取得</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-03 リアルタイム逐次文字起こし</h3>
+      <p>録音チャンク（60 秒）ごとに文字起こし API へ送信し、Side Panel に追記表示。</p>
+      <ul>
+        <li>v1 では「OpenAI Whisper API または Google STT v2 のいずれか 1 つを実装すること」を満たせばよい（Phase 1 PoC で評価して決定）</li>
+        <li>source_label: self / tab</li>
+        <li>タイムスタンプ付き segment</li>
+        <li>日本語必須</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-04 議事録 / タスクの構造化</h3>
+      <p>録音終了後、Claude Sonnet 4.6 で要約・タスク抽出・改善点・決定事項を JSON で取得する。</p>
+      <ul>
+        <li>LLM: Anthropic Claude Sonnet 4.6（確定）</li>
+        <li>個人前提、送信前承認ゲートなし</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-05 Google Docs 出力</h3>
+      <p>文字起こし原文 Doc と議事録 Doc の 2 本を指定フォルダに作成。</p>
+      <ul>
+        <li>命名: <code class="inline">[文字起こし] YYYY-MM-DD タイトル</code></li>
+        <li>タイトル取得: 開始時に tab_title を初期値として表示し、ユーザーが編集可能。空の場合は <code class="inline">無題ミーティング YYYY-MM-DD HH:MM</code> にフォールバック</li>
+        <li>appProperties で meeting_uuid をタグ付け</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-06 承認モード（手動 / 自動）</h3>
+      <p>抽出タスクの承認方式を設定で切り替え可能にする。</p>
+      <ul>
+        <li>手動承認モード（デフォルト）: 1 件ずつ y / n / 編集</li>
+        <li>自動承認モード: 全件 approved として次工程へ即進む</li>
+        <li>編集可能項目: タイトル / 日時 / 所要時間 / メモ</li>
+        <li>承認単位: 1 ミーティング</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-07 Google Calendar 登録</h3>
+      <p>承認タスクのみ Calendar に登録。再実行で重複しない。</p>
+      <ul>
+        <li>client-supplied event ID（task_uuid → base32hex）</li>
+        <li>409 Conflict は成功扱い</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-08 Sheets 台帳追記</h3>
+      <p>1 ミーティング 1 行で本拡張専用の Sheet に追記（Mac版と非共有）。</p>
+      <ul>
+        <li>meeting_uuid ユニーク制約（read-before-write）</li>
+        <li>列: 日付 / タイトル / 録音時間 / ツール / Docs URL / タスク数 / status</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-09 レポート / 分析画面</h3>
+      <p>Report ページで過去ミーティングを一覧 / 集計 / 検索できる。</p>
+      <ul>
+        <li>サマリーカード / グラフ / 一覧 / 分析 / フィルタ / エクスポート（詳細は 9 章）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-10 議事録の書き出し</h3>
+      <p>議事録を PDF と pptx で書き出せる。</p>
+      <ul>
+        <li>PDF: jsPDF（拡張内同梱・確定）</li>
+        <li>Slides: PptxGenJS（拡張内同梱・v1 確定。Google Slides API は v2 で再検討）</li>
+        <li>保存先: ローカル DL / Drive のいずれか選択</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-11 タスク完了状態の更新</h3>
+      <p>Calendar 登録だけでは完了状態にならないため、Report 画面でタスクを done に手動更新できる。</p>
+      <ul>
+        <li>done への遷移は「Report 画面のチェックボックス」で実行</li>
+        <li>completed_at を記録し、タスク完了率の集計源とする</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#e8f0e8;color:#4a784a;">v2 FUTURE</span>
+      <h3>FR-12 会議タブの URL 自動検出</h3>
+      <p>v1 では実装しない。<code class="inline">tabs</code> 権限追加とバックグラウンド常駐が必要なため、v2 以降で検討。v1 は手動ボタンのみ。</p>
+    </div>
+    <div class="card">
+      <span class="badge must">MUST</span>
+      <h3>FR-13 失敗チャンクの再送</h3>
+      <p>文字起こし API が失敗したチャンクを Report 画面の「失敗一覧」からまとめて再送できる。（18章の受け入れ基準に含まれるため MUST に格上げ）</p>
+      <ul>
+        <li>失敗チャンクは IndexedDB の永続キューに保存</li>
+        <li>Report 画面から 1 クリックで再送</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="badge should">SHOULD</span>
+      <h3>FR-14 ブラウザ通知</h3>
+      <p>文字起こし完了 / 承認待ち / 失敗を chrome.notifications で通知。</p>
+    </div>
+    <div class="card">
+      <span class="badge may">MAY</span>
+      <h3>FR-15 議事録の手動編集</h3>
+      <p>Side Panel 上で議事録の「タイトル / 本文段落 / 箇条書き項目」のテキスト編集ができる（書式は不変）。</p>
+    </div>
+    <div class="card">
+      <span class="badge may">MAY</span>
+      <h3>FR-16 録音音声のローカル DL</h3>
+      <p>後から聞き直せるよう、生の音声ファイルを IndexedDB から DL できる。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. 状態遷移（FSM） ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">5</div><h2>状態遷移（FSM）</h2><div class="sh-line"></div></div>
+
+  <div class="callout info">
+    <h4>1 ミーティングは下記 8 状態のいずれかに必ず属する</h4>
+    <p>失敗状態 <code class="inline">*_failed</code> を各正常状態の対になる形で持つ。再試行は同じ正常状態に戻ることで実現。</p>
+  </div>
+
+  <pre>recording
+   ↓ 録音停止
+transcribing  ──(失敗)──> transcribing_failed ──(retry)──> transcribing
+   ↓ 全チャンク文字起こし完了
+structuring   ──(失敗)──> structuring_failed  ──(retry)──> structuring
+   ↓ Claude 応答受領
+awaiting_approval   ←─(自動承認モードは即通過)
+   ↓ 承認完了
+writing_docs        ──(失敗)──> writing_docs_failed     ──(retry)──> writing_docs
+   ↓
+writing_calendar    ──(失敗)──> writing_calendar_failed ──(retry)──> writing_calendar
+   ↓
+writing_sheets      ──(失敗)──> writing_sheets_failed   ──(retry)──> writing_sheets
+   ↓
+done</pre>
+
+  <div class="grid" style="margin-top:18px;">
+    <div class="card">
+      <h3>再試行・冪等の原則</h3>
+      <ul>
+        <li>writing_docs：Doc の appProperties で meeting_uuid 検索 → 既存があれば再利用</li>
+        <li>writing_calendar：task_uuid 由来の決定論 event ID で 409 = 成功扱い</li>
+        <li>writing_sheets：read-before-write で meeting_uuid 行を検索</li>
+        <li>いずれの *_failed からも、ユーザー操作 or 自動リトライで同じ正常状態に戻る</li>
+        <li>done に到達するのは writing_sheets まで完走したときのみ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>排他制御</h3>
+      <ul>
+        <li>recording 中は新規録音を開始できない（chrome.storage.local の lock キー）</li>
+        <li>同一 meeting_uuid に対する API 書き込みは Service Worker 内のキューで直列化</li>
+        <li>lock 取得失敗は例外で即終了（中途半端な yield を作らない）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6. 重複防止の粒度 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">6</div><h2>重複防止の粒度</h2><div class="sh-line"></div></div>
+
+  <table>
+    <thead>
+      <tr><th style="width:200px;">レベル</th><th>キー</th><th>防げるケース</th><th>防げないケース</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>L1: セッション重複</strong></td>
+        <td>meeting_uuid</td>
+        <td>同一録音の再処理 / 書き込み失敗からのリトライ</td>
+        <td>同じ会議をうっかり 2 回録音した場合</td>
+      </tr>
+      <tr>
+        <td><strong>L2: 実会議重複</strong></td>
+        <td>tab_url + started_at の ±15 分窓 + title 類似度 ≥0.8</td>
+        <td>同じ会議を 2 回録音した場合の警告（Side Panel に「類似ミーティングがあります」と表示し、新規 / マージ / 上書きを選ばせる）</td>
+        <td>完全別タブで意図的に再録音した場合（このときは別ミーティング扱い）</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 7. 非機能要件 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">7</div><h2>非機能要件（NFR）</h2><div class="sh-line"></div></div>
+
+  <table>
+    <thead>
+      <tr><th style="width:140px;">区分</th><th>要件</th><th style="width:300px;">指標 / 閾値（測定条件）</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>性能（文字起こし）</td>
+        <td>60 秒チャンクの文字起こし応答が録音追従できる</td>
+        <td>チャンク 60 秒 / 16kHz mono wav / OpenAI Whisper API / 同時送信 1 本 / 上り 20Mbps 以上 → 応答 ≤ 15 秒</td>
+      </tr>
+      <tr>
+        <td>SLA（手動承認モード）</td>
+        <td>承認完了後の Docs/Calendar/Sheets 書き込みが完了するまで</td>
+        <td>承認操作完了から 5 分以内</td>
+      </tr>
+      <tr>
+        <td>SLA（自動承認モード）</td>
+        <td>録音停止から Docs/Calendar/Sheets 書き込み完了まで</td>
+        <td>録音停止から 10 分以内（60 分会議の場合）</td>
+      </tr>
+      <tr>
+        <td>可用性</td>
+        <td>会議中ずっと Chrome が起動している前提</td>
+        <td>Mac OFF / Chrome 閉じ = 動かない（前提として受容）</td>
+      </tr>
+      <tr>
+        <td>冪等性</td>
+        <td>同じ meeting_uuid で 2 回処理しても Docs / Calendar / Sheets が重複しない</td>
+        <td>FSM + 決定論的 event ID + read-before-write</td>
+      </tr>
+      <tr>
+        <td>クラッシュ耐性</td>
+        <td>録音中に Service Worker が死んでも Offscreen Document で録音継続</td>
+        <td>chunk 単位で IndexedDB に逐次永続化、state は chrome.storage.local</td>
+      </tr>
+      <tr>
+        <td>セキュリティ</td>
+        <td>3 章のデータフロー表に定義した送信先以外には送らない</td>
+        <td>OAuth は chrome.identity / API キーは端末ローカル平文保存（受容）</td>
+      </tr>
+      <tr>
+        <td>コスト</td>
+        <td>1 ミーティング 60 分あたり $0.5 以下</td>
+        <td>Whisper API（$0.006/分 × 60 = $0.36）+ Claude Sonnet 4.6 入力 60K トークン / 出力 4K トークン 想定 → 合計 ≤ $0.5</td>
+      </tr>
+      <tr>
+        <td>容量上限</td>
+        <td>1 ミーティング 120 分まで</td>
+        <td>超過時は自動分割（60 分 × N）して別 meeting_uuid として保存</td>
+      </tr>
+      <tr>
+        <td>ストレージ</td>
+        <td>chrome.storage.local は 10MB 以内に収める</td>
+        <td>メタデータのみ。音声と segments は IndexedDB（端末ストレージ上限の範囲）</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 8. アーキテクチャ ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">8</div><h2>アーキテクチャ</h2><div class="sh-line"></div></div>
+
+  <div class="callout info">
+    <h4>方針</h4>
+    <p>
+      Service Worker は短命だが永続的に存在する性質、Offscreen Document は長時間動かせるが UI を持たない性質を組み合わせる。
+      録音実体は Offscreen、API 呼び出しは Service Worker、UI は Popup と Side Panel と Report ページが担当。
+      音声バイナリと segments は IndexedDB、状態とメタデータは chrome.storage.local に分離保存する。
+      Cloud Run / Apps Script は一切使わない。
+    </p>
+  </div>
+
+  <pre>┌─────────────────────────────────────────────────────────────────┐
+│ Chrome Extension（MV3）                                         │
+│                                                                 │
+│ ┌── Popup (popup.html) ──────────────────────────────────────┐ │
+│ │  ・録音開始 / 停止 / ステータス表示                          │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│ ┌── Side Panel (sidepanel.html) ─────────────────────────────┐ │
+│ │  ・リアルタイム文字起こし / 議事録プレビュー                 │ │
+│ │  ・タスク承認 UI（手動モード時）                            │ │
+│ │  ・PDF / Slides 書き出しボタン                              │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│ ┌── Report Page (report.html) ───────────────────────────────┐ │
+│ │  ・過去ミーティング一覧 / 集計 / 分析                        │ │
+│ │  ・タスク完了の手動チェック（FR-11）                         │ │
+│ │  ・失敗チャンク再送（FR-13）                                 │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│ ┌── Offscreen Document (offscreen.html) ─────────────────────┐ │
+│ │  ・tabCapture / getUserMedia / MediaRecorder × 2            │ │
+│ │  ・60 秒チャンクを IndexedDB へ書き込み                      │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│ ┌── Service Worker (background.js) ──────────────────────────┐ │
+│ │  ・チャンク → 文字起こし API / Claude API                   │ │
+│ │  ・Google Docs / Calendar / Sheets API 直叩き              │ │
+│ │  ・FSM 駆動の writer / retry キュー                          │ │
+│ │  ・chrome.identity で OAuth                                 │ │
+│ └────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌── Storage ─────────────────────────────────────────────────┐ │
+│ │  chrome.storage.local : 状態 / メタデータ / 設定 / API キー │ │
+│ │  IndexedDB           : 音声チャンク / segments / 議事録JSON │ │
+│ └────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘</pre>
+</section>
+
+<!-- ═══ 9. レポート / 分析画面の要件 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">9</div><h2>レポート / 分析画面の要件</h2><div class="sh-line"></div></div>
+
+  <div class="callout idea">
+    <h4>1 ページに集約された普通のレポート画面</h4>
+    <p>
+      過去のミーティングを「一覧で見て」「集計して」「掘り下げて」「書き出せる」画面を 1 ページに集約する。
+      毎日の会議が積み上がっていくことが見える化されると、議事録を取る習慣そのものが続く。
+    </p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>① サマリーカード</h3>
+      <ul>
+        <li>今週の会議時間 合計</li>
+        <li>今月の会議数</li>
+        <li>未完了タスク数</li>
+        <li>タスク完了率（直近 30 日）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>② グラフ（Chart.js）</h3>
+      <ul>
+        <li>週次会議時間（棒グラフ）</li>
+        <li>会議ツール別シェア（円グラフ）</li>
+        <li>タスク状態遷移（積み上げ棒）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>③ 一覧テーブル</h3>
+      <ul>
+        <li>日付 / タイトル / 時間 / ツール / タスク数 / status</li>
+        <li>クリックで詳細パネル（議事録プレビュー）</li>
+        <li>Docs / Calendar へのリンク</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>④ 分析</h3>
+      <ul>
+        <li>頻出キーワード（直近 30 日）</li>
+        <li>改善点の繰り返し検出</li>
+        <li>誰宛のタスクが多いか（owner = LLM 抽出の自由文字列ベース）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⑤ フィルタ</h3>
+      <ul>
+        <li>期間（今週 / 今月 / 直近 90 日 / カスタム）</li>
+        <li>会議ツール</li>
+        <li>キーワード検索</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⑥ タスク完了チェック</h3>
+      <ul>
+        <li>各タスクにチェックボックス。done に手動遷移 → completed_at を記録</li>
+        <li>FR-11 の実体</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⑦ エクスポート</h3>
+      <ul>
+        <li>選択ミーティングを PDF / pptx で一括書き出し</li>
+        <li>一覧を CSV 書き出し</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 10. データモデル ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">10</div><h2>データ・状態モデル</h2><div class="sh-line"></div></div>
+
+  <div class="callout info">
+    <h4>永続化は chrome.storage.local + IndexedDB + Sheets 台帳の三層</h4>
+    <p>
+      chrome.storage.local は state machine とメタデータのみ（10MB に収める）。
+      音声 / segments / 議事録 JSON は IndexedDB に逃がす。Sheets 台帳は中長期の履歴と分析の源泉。
+    </p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>meetings（chrome.storage.local メタのみ）</h3>
+      <ul>
+        <li>meeting_uuid（PK）</li>
+        <li>state（5 章 FSM）</li>
+        <li>started_at / ended_at</li>
+        <li>tab_url / tab_title（録音元）</li>
+        <li>tool（meet / zoom / teams / discord / other）</li>
+        <li>title（編集後の最終タイトル）</li>
+        <li>transcript_doc_id / minutes_doc_id</li>
+        <li>ledger_row_index</li>
+        <li>error / updated_at</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>recordings（IndexedDB）</h3>
+      <ul>
+        <li>meeting_uuid（FK）</li>
+        <li>chunk_index / source_label（self/tab） / blob</li>
+        <li>transcript_segments[]（タイムスタンプ + テキスト）</li>
+        <li>minutes_json（Claude 出力）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>tasks（chrome.storage.local + Sheets 台帳）</h3>
+      <ul>
+        <li>task_uuid（PK）</li>
+        <li>meeting_uuid（FK）</li>
+        <li>title / owner（自由文字列） / due / estimate_minutes / context</li>
+        <li>status（pending / approved / skipped / inserted / done）</li>
+        <li>calendar_event_id</li>
+        <li>approved_at / inserted_at / completed_at</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Sheets 台帳（meetings_log / tasks_log 2 シート）</h3>
+      <ul>
+        <li>meetings_log: meeting_uuid / 日付 / タイトル / 時間 / ツール / Docs URL / タスク数 / 完了数 / status</li>
+        <li>tasks_log: task_uuid / meeting_uuid / title / owner / due / status / event_id / completed_at</li>
+        <li>read-before-write で重複防止</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 11. 初回セットアップ要件 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">11</div><h2>初回セットアップ要件</h2><div class="sh-line"></div></div>
+
+  <div class="callout info">
+    <h4>必須設定が揃うまで録音ボタンを無効化する</h4>
+    <p>下記項目のうち「必須」がすべて埋まるまで Popup の録音開始ボタンを disabled にし、Settings 画面に誘導する。</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th style="width:200px;">設定項目</th><th>必須/任意</th><th>デフォルト値</th><th>未設定時の挙動</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Google アカウント認証</td>
+        <td><span class="ng">必須</span></td>
+        <td>—</td>
+        <td>録音ボタン disabled / Settings から認証フローへ誘導</td>
+      </tr>
+      <tr>
+        <td>Docs 保存先フォルダ ID</td>
+        <td><span class="ng">必須</span></td>
+        <td>—</td>
+        <td>初回認証後に Drive 上で「Meeting Extension」フォルダを自動作成し、ID を保存</td>
+      </tr>
+      <tr>
+        <td>台帳 Sheets ID</td>
+        <td><span class="ng">必須</span></td>
+        <td>—</td>
+        <td>初回認証後に「Meeting Extension Ledger」スプレッドシートを自動作成（meetings_log / tasks_log 2 シート付き）</td>
+      </tr>
+      <tr>
+        <td>Calendar ID</td>
+        <td>任意</td>
+        <td>primary</td>
+        <td>primary を使用</td>
+      </tr>
+      <tr>
+        <td>文字起こし API キー</td>
+        <td><span class="ng">必須</span></td>
+        <td>—</td>
+        <td>録音ボタン disabled / Settings から入力誘導</td>
+      </tr>
+      <tr>
+        <td>Anthropic API キー</td>
+        <td><span class="ng">必須</span></td>
+        <td>—</td>
+        <td>同上</td>
+      </tr>
+      <tr>
+        <td>タイムゾーン</td>
+        <td>任意</td>
+        <td>ブラウザの Intl.DateTimeFormat().resolvedOptions().timeZone</td>
+        <td>ブラウザ値を採用</td>
+      </tr>
+      <tr>
+        <td>承認モード</td>
+        <td>任意</td>
+        <td>手動</td>
+        <td>手動を採用</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 12. 異常系ユースケース ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">12</div><h2>異常系ユースケース</h2><div class="sh-line"></div></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:220px;">ケース</th>
+        <th>挙動 / 状態遷移</th>
+        <th>ユーザー通知</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>マイク権限拒否</td>
+        <td>タブ音声のみで録音継続（source_label は tab のみ）</td>
+        <td>Popup に「マイクなしで録音中」バッジ</td>
+      </tr>
+      <tr>
+        <td>tabCapture 拒否 / 失敗</td>
+        <td>録音開始を中止</td>
+        <td>chrome.notifications でエラー表示</td>
+      </tr>
+      <tr>
+        <td>録音中に対象タブを閉じた</td>
+        <td>tabCapture が切れる → 録音停止 → 既存チャンクで処理続行（structuring に進む）</td>
+        <td>Popup と Side Panel に「タブが閉じられました」と表示</td>
+      </tr>
+      <tr>
+        <td>ネットワーク断（チャンク送信失敗）</td>
+        <td>当該チャンクを transcribing_failed のキューに退避。再接続後に自動リトライ</td>
+        <td>Side Panel に「未送信 N チャンク」表示</td>
+      </tr>
+      <tr>
+        <td>文字起こし API レート制限</td>
+        <td>指数バックオフで再送（最大 5 回）。超過は transcribing_failed</td>
+        <td>Report 画面の失敗一覧に表示（FR-13）</td>
+      </tr>
+      <tr>
+        <td>Claude API 5xx</td>
+        <td>structuring_failed。Report 画面から再実行可能</td>
+        <td>chrome.notifications</td>
+      </tr>
+      <tr>
+        <td>Google API 部分成功（Docs OK / Calendar 失敗）</td>
+        <td>writing_calendar_failed に留まる。done に進めない</td>
+        <td>Report 画面の status 列に表示</td>
+      </tr>
+      <tr>
+        <td>録音中に別タブで新規録音を試みた</td>
+        <td>排他 lock により拒否</td>
+        <td>「録音中のため開始できません」</td>
+      </tr>
+      <tr>
+        <td>会議タブが対象 URL だが音声が無い（無音）</td>
+        <td>30 秒間無音検知で警告表示。録音は継続</td>
+        <td>Side Panel に「音声が検出されません」</td>
+      </tr>
+      <tr>
+        <td>API キー未設定</td>
+        <td>11 章の初回セットアップ要件で録音ボタン disabled</td>
+        <td>Settings 画面へ誘導</td>
+      </tr>
+      <tr>
+        <td>OAuth トークン期限切れ</td>
+        <td>chrome.identity が自動 refresh。revoke 時は writer 段階で 401 → 再認証誘導</td>
+        <td>「Google 再認証が必要です」</td>
+      </tr>
+      <tr>
+        <td>120 分超過</td>
+        <td>60 分単位で自動分割し、別 meeting_uuid として直列保存</td>
+        <td>Side Panel に「分割保存中」</td>
+      </tr>
+      <tr>
+        <td>類似ミーティング検出（L2 重複）</td>
+        <td>writing 前にユーザーに新規 / マージ / 上書きを選ばせる</td>
+        <td>Side Panel ダイアログ</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 13. 認証・権限・シークレット ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">13</div><h2>認証・権限・シークレット</h2><div class="sh-line"></div></div>
+
+  <dl class="kv">
+    <dt>manifest permissions</dt>
+    <dd>
+      <code class="inline">tabCapture</code> /
+      <code class="inline">offscreen</code> /
+      <code class="inline">storage</code> /
+      <code class="inline">identity</code> /
+      <code class="inline">sidePanel</code> /
+      <code class="inline">notifications</code> /
+      <code class="inline">downloads</code>
+    </dd>
+    <dt>host_permissions</dt>
+    <dd>
+      <code class="inline">https://api.openai.com/*</code><br>
+      <code class="inline">https://*.googleapis.com/*</code><br>
+      <code class="inline">https://api.anthropic.com/*</code>
+    </dd>
+    <dt>OAuth スコープ</dt>
+    <dd>
+      <code class="inline">drive.file</code> / <code class="inline">documents</code> / <code class="inline">spreadsheets</code> / <code class="inline">calendar.events</code>
+    </dd>
+    <dt>API キー保管</dt>
+    <dd>
+      Whisper（または Google STT）/ Claude の API キーは <strong>chrome.storage.local に端末ローカル平文で保存</strong>する。
+      個人運用のリスク受容として明記。OS キーチェーン連携は v2 以降。
+    </dd>
+    <dt>Google OAuth</dt>
+    <dd>chrome.identity.getAuthToken で取得。Refresh は Chrome が管理。revoke 時は writer 段階で 401 を検知して再認証。</dd>
+    <dt>個人 / 配布</dt>
+    <dd>v1 は個人。Chrome Web Store 公開はしない（unpacked 配布）。</dd>
+  </dl>
+</section>
+
+<!-- ═══ 14. 採用しない選択肢 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">14</div><h2>採用しない選択肢とその理由</h2><div class="sh-line"></div></div>
+
+  <table>
+    <thead>
+      <tr><th>選択肢</th><th>不採用理由</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Apps Script / Cloud Run を併用</td>
+        <td>本プロジェクトは「拡張機能完結」がコンセプト。Mac 版とは設計思想が違うため混ぜない。</td>
+      </tr>
+      <tr>
+        <td>Service Worker だけで録音</td>
+        <td>SW は数十秒〜数分でアイドル停止する。長時間録音は Offscreen Document に逃がす。</td>
+      </tr>
+      <tr>
+        <td>Drive 録画を待つ</td>
+        <td>本プロジェクトはリアルタイム派。Drive 録画ファイル経路は Mac 版に任せる。</td>
+      </tr>
+      <tr>
+        <td>ローカル Whisper（WASM）</td>
+        <td>120 分音声を WASM で回すとメモリ的に厳しい。v1 は API に逃がす。v2 で再検討。</td>
+      </tr>
+      <tr>
+        <td>真の話者分離（diarization）</td>
+        <td>v1 は source_label（self/tab）のみ。複数相手は tab に潰す。v2 以降で再検討。</td>
+      </tr>
+      <tr>
+        <td>Chrome Web Store 公開</td>
+        <td>個人 unpacked 配布で十分。審査コストを払わない。</td>
+      </tr>
+      <tr>
+        <td>Mac 版と台帳共有</td>
+        <td>記録単位（録画ファイル vs 録音セッション）が違うため、混ぜると分析が破綻する。別シート運用。</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 15. リスクと前提 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">15</div><h2>リスクと前提（受容するもの）</h2><div class="sh-line"></div></div>
+
+  <ul class="bullet">
+    <li><strong>Chrome / Mac が起動していないと録音できない</strong>：これは本プロジェクトの前提として受容。</li>
+    <li><strong>Service Worker のアイドル停止</strong>：Offscreen Document に録音実体を逃がすことで対策。</li>
+    <li><strong>tabCapture はタブを閉じると止まる</strong>：会議タブは閉じない運用ルールで受容。閉じた場合の挙動は 12 章。</li>
+    <li><strong>マイクの権限ダイアログ</strong>：初回録音時に必要。拒否時はタブのみで継続。</li>
+    <li><strong>音声 / 文字起こしは外部 API へ送られる</strong>：3 章のデータフロー表のとおり。機密会議は対象外。</li>
+    <li><strong>API コスト</strong>：60 分 1 本で約 $0.3〜$0.5 を見込み。月 30 本で $9〜$15。</li>
+    <li><strong>API キーは端末ローカル平文保存</strong>：個人運用のリスク受容として明記。</li>
+    <li><strong>Chrome 更新で MV3 仕様が変わるリスク</strong>：Offscreen / sidePanel は比較的新しい API。定期的に動作確認。</li>
+  </ul>
+</section>
+
+<!-- ═══ 16. 決定保留事項 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">16</div><h2>決定保留事項（残るもの）</h2><div class="sh-line"></div></div>
+
+  <table>
+    <thead>
+      <tr><th style="width:200px;">論点</th><th>選択肢</th><th>判断時期</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>文字起こしエンジン</td>
+        <td>① OpenAI Whisper API<br>② Google Speech-to-Text v2</td>
+        <td>Phase 1 PoC で日本語精度・コスト・実装容易さを比較して確定</td>
+      </tr>
+      <tr>
+        <td>会議タイトル取得の補強</td>
+        <td>① tab_title のみ（v1）<br>② カレンダーと突き合わせ（v2 候補）</td>
+        <td>v2</td>
+      </tr>
+      <tr>
+        <td>OS キーチェーン連携</td>
+        <td>① v1 は平文受容<br>② v2 でキーチェーン連携</td>
+        <td>v2</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ 17. 段階的実装計画 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">17</div><h2>段階的実装計画</h2><div class="sh-line"></div></div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 1</span>
+      <h3>録音 PoC + STT 比較</h3>
+      <p>manifest + Offscreen + Popup の最小構成。tabCapture と getUserMedia の 2 トラック録音 → IndexedDB 保存 → DL まで。Whisper / Google STT の両方を試して 1 つ確定。</p>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 2</span>
+      <h3>逐次文字起こし + FSM</h3>
+      <p>60 秒チャンク → 文字起こし → Side Panel 追記。状態遷移と再送キュー込み。</p>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 3</span>
+      <h3>議事録 / タスク抽出</h3>
+      <p>Claude Sonnet 4.6 で構造化 → Side Panel に議事録 / タスク表示。手動 / 自動の両承認モード。</p>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 4</span>
+      <h3>Google 系書き込み</h3>
+      <p>OAuth → Docs 2 本 → Calendar → Sheets 台帳。冪等性確認。</p>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 5</span>
+      <h3>PDF / スライド書き出し</h3>
+      <p>jsPDF / PptxGenJS で書き出し。ローカル DL と Drive 保存の両方。</p>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 6</span>
+      <h3>レポート / 分析画面 + 完了管理</h3>
+      <p>Report ページ。Chart.js / 一覧 / フィルタ / CSV / タスク完了チェック / 失敗チャンク再送。</p>
+    </div>
+    <div class="card">
+      <span class="badge" style="background:#eef0f5;color:#4a6f8a;">PHASE 7</span>
+      <h3>運用安定化 + 異常系</h3>
+      <p>12 章の異常系ユースケースを 1 件ずつ実装。Codex 敵対的レビュー必須。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 18. 受け入れ基準 ═══ -->
+<section>
+  <div class="sh"><div class="sh-num">18</div><h2>受け入れ基準（v1 完了の定義）</h2><div class="sh-line"></div></div>
+
+  <ul class="bullet">
+    <li>Meet / Zoom Web / Teams のいずれかで開始した会議で、タブ音声とマイクの両方が source_label 付きで文字起こしされる。</li>
+    <li>手動承認モードでは「承認完了から 5 分以内」、自動承認モードでは「録音停止から 10 分以内」に Docs 2 本 / Calendar タスク / Sheets 台帳行が揃う。</li>
+    <li>同じ meeting_uuid を 2 回処理しても、Docs / Calendar event / 台帳行が重複しない。同じ会議をうっかり 2 回録音した場合は writing 前に L2 重複検出ダイアログが出る。</li>
+    <li>議事録を PDF と pptx で書き出せる（ローカル DL と Drive 保存の両方）。</li>
+    <li>Report 画面で過去 30 日のミーティングが一覧 / 集計 / フィルタでき、タスク完了チェックで done に遷移できる。</li>
+    <li>12 章の異常系ユースケース 13 件のうち、MUST 対応 11 件（無音検知と類似検出を除く全件）で定義どおりの挙動を示す。</li>
+    <li>失敗チャンクが Report 画面に表示され、ボタン 1 つで再送できる。</li>
+    <li>11 章の必須設定が未充足の場合、録音ボタンが disabled になり Settings へ誘導される。</li>
+    <li>Codex 敵対的レビューを最低 2 ラウンド実施し、high 以上の指摘がゼロになる。</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  Meeting Extension Requirements v1.1 · 2026-05-14 · Codex review 1st round reflected
+</footer>
+
+</body>
+</html>

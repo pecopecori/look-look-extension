@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Google Sans', Arial, sans-serif;
+      font-size: 13px;
+      background: #f0f2f5;
+      padding: 10px;
+      min-height: 100vh;
+    }
+
+    /* ヘッダー */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .header-left { display: flex; align-items: center; gap: 8px; }
+    .header-icon { font-size: 20px; }
+    .header-title { font-size: 16px; font-weight: 700; color: #2c2c2c; }
+    .help-btn {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #4472C4;
+      color: white;
+      border: none;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .help-btn:hover { background: #3361b3; }
+
+    /* カード */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    /* カレンダー連携トグル */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #444;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .toggle {
+      position: relative;
+      width: 44px; height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #ccc;
+      border-radius: 24px;
+      transition: .25s;
+    }
+    .toggle-slider:before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .25s;
+    }
+    input:checked + .toggle-slider { background: #4472C4; }
+    input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+    /* ボタン */
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      transition: filter 0.15s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .btn:last-child { margin-bottom: 0; }
+    .btn:hover:not(:disabled) { filter: brightness(0.93); }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-start  { background: #34A853; color: white; }
+    .btn-end    { background: #EA4335; color: white; }
+    .btn-sync   { background: #E6A020; color: white; }
+    .btn-reset  { background: #9E9E9E; color: white; }
+    .btn-endday { background: #4472C4; color: white; }
+
+    /* ステータスバー */
+    .status-bar {
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 10px;
+      display: none;
+      white-space: pre-wrap;
+    }
+    .status-bar.success {
+      background: #e6f4ea;
+      color: #1e6b35;
+      border-left: 3px solid #34A853;
+      display: block;
+    }
+    .status-bar.error {
+      background: #fce8e6;
+      color: #c62828;
+      border-left: 3px solid #EA4335;
+      display: block;
+    }
+    .status-bar.info {
+      background: #e8f0fe;
+      color: #1a4a8c;
+      border-left: 3px solid #4472C4;
+      display: block;
+    }
+
+    /* スピナー */
+    .spinner {
+      display: none;
+      text-align: center;
+      padding: 4px 0;
+      color: #888;
+      font-size: 12px;
+    }
+    .spinner.active { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div class="header">
+  <div class="header-left">
+    <span class="header-icon">⏱</span>
+    <span class="header-title">タスク計測</span>
+  </div>
+  <button class="help-btn" onclick="showHelp()">?</button>
+</div>
+
+<!-- カレンダー連携 -->
+<div class="card">
+  <div class="toggle-row">
+    <span class="toggle-label">📅 カレンダー連携</span>
+    <label class="toggle">
+      <input type="checkbox" id="calendarToggle" onchange="toggleCalendar(this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+  </div>
+</div>
+
+<!-- 操作ボタン -->
+<div class="card">
+  <button class="btn btn-start" id="btnStart" onclick="startTask()">
+    ▶ 開始
+  </button>
+  <button class="btn btn-end" id="btnEnd" onclick="endTask()">
+    ■ 終了
+  </button>
+  <button class="btn btn-sync" id="btnSync" onclick="updateAndSync()">
+    🔄 集計更新・同期
+  </button>
+  <button class="btn btn-reset" id="btnReset" onclick="resetTask()">
+    ↺ リセット
+  </button>
+</div>
+
+<!-- 本日終了 -->
+<div class="card">
+  <button class="btn btn-endday" id="btnEndDay" onclick="endDay()">
+    🌙 本日終了
+  </button>
+</div>
+
+<!-- 処理中 -->
+<div class="spinner" id="spinner">処理中...</div>
+
+<!-- ステータス -->
+<div id="status" class="status-bar"></div>
+
+<script>
+  var ALL_BTNS = ['btnStart', 'btnEnd', 'btnSync', 'btnReset', 'btnEndDay'];
+
+  window.onload = function() {
+    google.script.run
+      .withSuccessHandler(function(info) {
+        document.getElementById('calendarToggle').checked = info.calendarEnabled;
+      })
+      .getSheetInfo();
+  };
+
+  function toggleCalendar(enabled) {
+    google.script.run
+      .withSuccessHandler(function() {
+        showStatus(enabled ? '📅 カレンダー連携をONにしました' : 'カレンダー連携をOFFにしました', 'info');
+      })
+      .withFailureHandler(handleError)
+      .setCalendarEnabled(enabled);
+  }
+
+  function startTask() {
+    setLoading(true);
+    google.script.run
+      .withSuccessHandler(function(result) {
+        setLoading(false);
+        if (result.success) {
+          showStatus('▶ 開始: ' + result.time + '\n' + result.task, 'success');
+        } else {
+          showStatus(result.message, 'error');
+        }
+      })
+      .withFailureHandler(handleError)
+      .startTask();
+  }
+
+  function endTask() {
+    setLoading(true);
+    google.script.run
+      .withSuccessHandler(function(result) {
+        setLoading(false);
+        if (result.success) {
+          showStatus('■ 終了: ' + result.time, 'success');
+        } else {
+          showStatus(result.message, 'error');
+        }
+      })
+      .withFailureHandler(handleError)
+      .endTask();
+  }
+
+  function resetTask() {
+    setLoading(true);
+    google.script.run
+      .withSuccessHandler(function(result) {
+        setLoading(false);
+        if (result.success) {
+          showStatus('リセットしました', 'info');
+        } else {
+          showStatus(result.message, 'error');
+        }
+      })
+      .withFailureHandler(handleError)
+      .resetTask();
+  }
+
+  function updateAndSync() {
+    setLoading(true);
+    showStatus('集計を更新中...', 'info');
+    google.script.run
+      .withSuccessHandler(function(result) {
+        setLoading(false);
+        if (result.success) {
+          showStatus('✓ ' + result.message, 'success');
+        } else {
+          showStatus(result.message, 'error');
+        }
+      })
+      .withFailureHandler(handleError)
+      .updateAndSync();
+  }
+
+  function endDay() {
+    setLoading(true);
+    showStatus('本日終了処理中...', 'info');
+    google.script.run
+      .withSuccessHandler(function(result) {
+        setLoading(false);
+        if (result.success) {
+          showStatus('🌙 ' + result.message, 'success');
+        } else {
+          showStatus(result.message, 'error');
+        }
+      })
+      .withFailureHandler(handleError)
+      .endDay();
+  }
+
+  function showHelp() {
+    alert(
+      'タスク計測の使い方\n\n' +
+      '【準備】\n' +
+      '集計シートにタスク名と予定時間を入力\n\n' +
+      '【毎日の使い方】\n' +
+      '1. 日付シートでタスク行を選択\n' +
+      '2. ▶開始 → 作業開始時間を記録\n' +
+      '3. ■終了 → 作業終了時間を記録\n' +
+      '4. 次のタスク行を選択して繰り返す\n' +
+      '5. 🔄集計更新・同期 → 月次集計を更新\n' +
+      '6. 🌙本日終了 → 一日の作業を完了\n\n' +
+      '【カレンダー連携】\n' +
+      'ONにすると同期時にGoogleカレンダーへ\n' +
+      'タスクをイベントとして登録します\n\n' +
+      '【時間の手入力】\n' +
+      '開始・終了列に直接入力してもOKです'
+    );
+  }
+
+  function setLoading(isLoading) {
+    ALL_BTNS.forEach(function(id) {
+      document.getElementById(id).disabled = isLoading;
+    });
+    document.getElementById('spinner').className = isLoading ? 'spinner active' : 'spinner';
+  }
+
+  function showStatus(message, type) {
+    var el = document.getElementById('status');
+    el.textContent = message;
+    el.className = 'status-bar ' + type;
+
+    if (type === 'success') {
+      clearTimeout(window._statusTimer);
+      window._statusTimer = setTimeout(function() {
+        el.className = 'status-bar';
+      }, 5000);
+    }
+  }
+
+  function handleError(error) {
+    setLoading(false);
+    showStatus('エラー: ' + error.message, 'error');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Extension Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="pill">Setup</div>
+      <h1>Settings</h1>
+      <p>必要な設定が揃うまで録音を開始できません。順番に埋めてください。</p>
+    </header>
+
+    <ol class="setup-steps">
+      <li>
+        <strong>1. ローカル faster-whisper サーバを起動</strong>
+        <p>ターミナルで <code>cd /Users/demo/開発/meeting-extension/local-server && ./install.sh</code> を1回実行。Macログイン時に自動起動するようになります。<br>動作確認: <code>curl http://127.0.0.1:9000/health</code></p>
+      </li>
+      <li>
+        <strong>2. Gemini API キーを取得（無料）</strong>
+        <p><a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio</a> で「Create API key」→ コピー。下のフォームに貼り付けてください。無料枠は 1分15req / 1日1500req まで。</p>
+      </li>
+      <li>
+        <strong>3. Google Cloud で OAuth Client ID</strong>
+        <p>Docs / Drive / Sheets / Calendar API を有効化したプロジェクトで「Chrome 拡張機能」種別の OAuth Client ID を発行し、<code>manifest.json</code> の <code>oauth2.client_id</code> に貼り付け→拡張機能を再読み込み。下の「認証して Drive / Sheets を準備」を押すとフォルダと台帳が自動で作られます。</p>
+      </li>
+    </ol>
+
+    <section class="card" id="reauthCard" hidden>
+      <div class="section-head">
+        <h2>Google 再認証が必要です</h2>
+      </div>
+      <p class="hint">トークンの期限切れか権限変更を検知しました。下の認証ボタンを押し直してください。</p>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>Google 連携</h2>
+        <button class="btn primary" id="provisionBtn">認証して Drive / Sheets を準備</button>
+      </div>
+      <label class="field">
+        <span>Docs 保存先フォルダ ID</span>
+        <input id="docsFolderId" type="text" class="text-input" placeholder="未指定なら新規作成">
+      </label>
+      <label class="field">
+        <span>Ledger Sheets ID</span>
+        <input id="spreadsheetId" type="text" class="text-input" placeholder="未指定なら新規作成">
+      </label>
+      <label class="field">
+        <span>Calendar ID</span>
+        <input id="calendarId" type="text" class="text-input" placeholder="primary">
+      </label>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>文字起こし（ローカル faster-whisper）</h2>
+        <button class="btn" id="testWhisperBtn">サーバ疎通テスト</button>
+      </div>
+      <label class="field">
+        <span>サーバ URL</span>
+        <input id="whisperServerUrl" type="text" class="text-input" placeholder="http://127.0.0.1:9000">
+      </label>
+      <label class="field">
+        <span>言語ヒント</span>
+        <input id="whisperLanguage" type="text" class="text-input" placeholder="ja">
+      </label>
+      <p class="hint" id="whisperStatus">未確認</p>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>議事録生成（Google Gemini）</h2>
+      </div>
+      <label class="field">
+        <span>Gemini API キー</span>
+        <input id="geminiApiKey" type="password" class="text-input" autocomplete="off">
+      </label>
+      <label class="field">
+        <span>モデル</span>
+        <input id="geminiModel" type="text" class="text-input" placeholder="gemini-2.0-flash">
+      </label>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>運用</h2>
+      </div>
+      <label class="field">
+        <span>タイムゾーン</span>
+        <input id="timezone" type="text" class="text-input">
+      </label>
+      <label class="field">
+        <span>承認モード</span>
+        <select id="approvalMode" class="text-input">
+          <option value="manual">manual（推奨：タスクは Side Panel で承認）</option>
+          <option value="auto">auto（タスクを自動で Calendar / Sheets に流す）</option>
+        </select>
+      </label>
+      <label class="check-row">
+        <input id="autoOpenSidePanel" type="checkbox">
+        <span>録音開始時に Side Panel を自動で開く</span>
+      </label>
+      <label class="check-row">
+        <input id="notifyOnFailure" type="checkbox">
+        <span>失敗時に通知を出す</span>
+      </label>
+    </section>
+
+    <div class="footer-actions">
+      <button class="btn primary" id="saveBtn">保存</button>
+      <a class="btn" href="./report.html">Report を開く</a>
+    </div>
+    <div class="toast" id="toast"></div>
+  </main>
+
+  <script src="lib/utils.js"></script>
+  <script src="lib/storage.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

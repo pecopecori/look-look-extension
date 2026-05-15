@@ -23,7 +23,6 @@
     selectedEmojiIndex: 0,
     rememberToolbarPosition: true,
     toolbarPosition: { top: 20, left: 20 },
-    recorder: { includeMic: true, filenamePrefix: 'pointer-recording' },
   };
 
   const state = {
@@ -61,18 +60,9 @@
 
   const settingsReady = loadStoredSettings();
 
-  // ページロード時に録画中かどうかを確認してバッジを復元
-  chrome.runtime.sendMessage({ type: 'POPUP_GET_STATE' }).then((res) => {
-    const { status, startedAt } = res?.recorder || {};
-    if (status === 'recording') updateRecBadge('recording', startedAt);
-  }).catch(() => {});
-
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg?.type === 'TOGGLE_TOOLBAR') {
       void toggleToolbar();
-    }
-    if (msg?.type === 'RECORDING_STATUS_CHANGED') {
-      updateRecBadge(msg.status, msg.startedAt);
     }
   });
 
@@ -468,7 +458,6 @@
 
       <button class="tool-btn" data-tool="eraser" title="個別消去">🧽</button>
       <button class="tool-btn" data-action="clear" title="全消去">🗑️</button>
-      <button class="tool-btn" data-action="record" title="録画パネル">🎥</button>
       <button class="tool-btn" data-panel="themePanel" title="UIテーマ">🌈</button>
       <button class="tool-btn" data-action="close" title="閉じる">✕</button>
     </div>
@@ -527,7 +516,6 @@
       else if (target.dataset.toggle) toggleFeature(target.dataset.toggle);
       else if (target.dataset.panel) togglePanel(target.dataset.panel);
       else if (target.dataset.action === 'clear') clearAll();
-      else if (target.dataset.action === 'record') openRecorder();
       else if (target.dataset.action === 'close') void toggleToolbar();
     });
 
@@ -1272,71 +1260,8 @@
         0%,100% { box-shadow: 0 0 0 0 rgba(255,217,61,0.55), 0 0 14px rgba(255,217,61,0.3); }
         50%     { box-shadow: 0 0 0 10px rgba(255,217,61,0), 0 0 22px rgba(255,217,61,0.5); }
       }
-      @keyframes __demoRecDot {
-        0%,100% { opacity: 1; }
-        50%     { opacity: 0.2; }
-      }
-      #__looklook_rec_badge__ {
-        position: fixed; top: 16px; right: 16px;
-        z-index: 2147483647; pointer-events: none;
-        display: flex; align-items: center; gap: 7px;
-        background: rgba(30,30,30,0.88);
-        color: #fff;
-        border: 1.5px solid rgba(203,84,87,0.6);
-        border-radius: 999px;
-        padding: 6px 14px 6px 10px;
-        font-family: 'M PLUS Rounded 1c', system-ui, sans-serif;
-        font-size: 13px; font-weight: 700;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        letter-spacing: 0.03em;
-        transition: opacity 0.3s;
-      }
-      #__looklook_rec_badge__ .rec-dot {
-        width: 9px; height: 9px; border-radius: 50%;
-        background: #CB5457;
-        animation: __demoRecDot 1.1s ease-in-out infinite;
-        flex-shrink: 0;
-      }
     `;
     document.head.appendChild(style);
-  }
-
-  let recBadgeEl = null;
-  let recBadgeTimer = null;
-
-  function updateRecBadge(status, startedAt) {
-    if (status === 'recording') {
-      showRecBadge(startedAt);
-    } else {
-      hideRecBadge();
-    }
-  }
-
-  function showRecBadge(startedAt) {
-    if (!recBadgeEl) {
-      recBadgeEl = document.createElement('div');
-      recBadgeEl.id = '__looklook_rec_badge__';
-      recBadgeEl.innerHTML = '<span class="rec-dot"></span><span class="rec-label">REC 00:00</span>';
-      document.documentElement.appendChild(recBadgeEl);
-    }
-    if (recBadgeTimer) clearInterval(recBadgeTimer);
-    const label = recBadgeEl.querySelector('.rec-label');
-    const tick = () => {
-      const elapsed = startedAt ? Math.max(0, Date.now() - startedAt) : 0;
-      const s = Math.floor(elapsed / 1000);
-      const mm = String(Math.floor(s / 60)).padStart(2, '0');
-      const ss = String(s % 60).padStart(2, '0');
-      label.textContent = `REC ${mm}:${ss}`;
-    };
-    tick();
-    recBadgeTimer = setInterval(tick, 500);
-  }
-
-  function hideRecBadge() {
-    if (recBadgeTimer) { clearInterval(recBadgeTimer); recBadgeTimer = null; }
-    if (recBadgeEl) { recBadgeEl.remove(); recBadgeEl = null; }
   }
 
   function spawnClickZoom(x, y) {
@@ -1440,23 +1365,6 @@
     state.keystrokeOn = on;
     keystrokeEl?.classList.toggle('on', on);
     if (!on && keystrokeEl) keystrokeEl.innerHTML = '';
-  }
-
-  function openRecorder() {
-    chrome.runtime.sendMessage({ type: 'POPUP_OPEN_RECORDER', autoStart: false })
-      .then((res) => {
-        if (res && !res.ok) {
-          console.error('[Look!Look!] recorder open failed:', res.error);
-        }
-      })
-      .catch((err) => {
-        console.error('[Look!Look!] recorder message failed:', err);
-        // service worker が死んでいる場合にフォールバックで再送
-        setTimeout(() => {
-          chrome.runtime.sendMessage({ type: 'POPUP_OPEN_RECORDER', autoStart: false })
-            .catch(() => {});
-        }, 500);
-      });
   }
 
   function makeDraggable(target, handle) {

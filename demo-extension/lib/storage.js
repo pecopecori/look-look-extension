@@ -14,10 +14,6 @@
     selectedEmojiIndex: 0,
     rememberToolbarPosition: true,
     toolbarPosition: { top: 20, left: 20 },
-    recorder: {
-      includeMic: true,
-      filenamePrefix: 'looklook-recording',
-    },
   });
 
   function cloneDefaults() {
@@ -36,7 +32,6 @@
 
   function normalizeSettings(raw = {}) {
     const settings = cloneDefaults();
-    const recorder = raw.recorder || {};
     const toolbarPosition = raw.toolbarPosition || {};
 
     settings.defaultTool = sanitizeChoice(raw.defaultTool, settings.defaultTool, [
@@ -57,12 +52,6 @@
     settings.toolbarPosition = {
       top: clampNumber(toolbarPosition.top, settings.toolbarPosition.top, 0, 10000),
       left: clampNumber(toolbarPosition.left, settings.toolbarPosition.left, 0, 10000),
-    };
-    settings.recorder = {
-      includeMic: recorder.includeMic !== undefined ? Boolean(recorder.includeMic) : settings.recorder.includeMic,
-      filenamePrefix: typeof recorder.filenamePrefix === 'string' && recorder.filenamePrefix.trim()
-        ? recorder.filenamePrefix.trim().slice(0, 80)
-        : settings.recorder.filenamePrefix,
     };
 
     return settings;

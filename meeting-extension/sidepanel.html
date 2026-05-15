@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Extension Side Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="pill">Live Transcript</div>
+      <h1 id="meetingTitle">Meeting Extension</h1>
+      <p id="meetingMeta">録音開始後に逐次文字起こしと議事録プレビューが流れます。</p>
+    </header>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>状態</h2>
+        <div class="badge" id="stateBadge">idle</div>
+      </div>
+      <div class="action-row">
+        <button class="btn" id="structureBtn">議事録を構造化</button>
+        <button class="btn primary" id="approveWriteBtn">承認して書き込み</button>
+        <button class="btn" id="retryBtn">失敗を再実行</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>リアルタイム文字起こし</h2>
+        <button class="btn ghost" id="exportJsonBtn">JSON 出力</button>
+      </div>
+      <pre class="transcript" id="transcriptBox">まだ文字起こしはありません。</pre>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>議事録プレビュー</h2>
+        <button class="btn ghost" id="downloadAudioBtn">録音をダウンロード</button>
+      </div>
+      <div class="minutes" id="minutesBox">録音停止後に構造化結果を表示します。</div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>タスク承認</h2>
+      </div>
+      <div class="tasks" id="tasksBox"></div>
+    </section>
+  </main>
+
+  <script src="lib/utils.js"></script>
+  <script src="lib/storage.js"></script>
+  <script src="lib/idb.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

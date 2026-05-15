@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod +x /Users/demo/開発/ai-workflow/setup.sh)",
+      "Bash(git branch:*)",
+      "Bash(git commit -m \"feat: AI Dev Pipeline 初期セットアップ:*)",
+      "Bash(gh repo:*)",
+      "Bash(gh auth:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl -fsSL https://raw.githubusercontent.com/collaborator-ai/collab-public/main/install.sh)",
+      "Bash(bash)",
+      "Bash(curl -fsSL \"https://api.github.com/repos/collaborator-ai/collab-public/releases/latest\")",
+      "Bash(curl -fSL --progress-bar \"https://github.com/collaborator-ai/collab-public/releases/download/v0.3.0/Collaborator-0.3.0-arm64-mac.zip\" -o \"/tmp/Collaborator.zip\")",
+      "Bash(ditto -xk /tmp/Collaborator.zip /Applications)",
+      "Bash(open:*)",
+      "Bash(file /Applications/Collaborator.app/Contents/MacOS/*)",
+      "Bash(xattr -d com.apple.quarantine /Applications/Collaborator.app)",
+      "Bash(codesign --force --deep --sign - /Applications/Collaborator.app)",
+      "Bash(curl -fSL --progress-bar \"https://github.com/collaborator-ai/collab-public/releases/download/v0.3.0/Collaborator-0.3.0-x64-mac.zip\" -o \"/tmp/Collaborator-x64.zip\")",
+      "Bash(curl -s https://api.github.com/repos/collaborator-ai/collab-public/releases/latest)",
+      "Bash(python3 -c \"import sys,json; [print\\(a[''''name''''], a[''''browser_download_url'''']\\) for a in json.load\\(sys.stdin\\).get\\(''''assets'''',[]\\)]\")",
+      "Bash(sysctl -n machdep.cpu.brand_string)",
+      "Bash(curl -s -X GET \"https://app.asana.com/api/1.0/*\")",
+      "Bash(curl -s -X POST \"https://app.asana.com/api/1.0/*\")",
+      "Bash(python3 -c \"import sys,json;*\")"
+    ]
+  }
+}
