@@ -6,12 +6,6 @@
 
 <br>
 
-# 👀 Look!Look!
-
-**画面を、もっと伝わるかたちに。**
-
-<br>
-
 ## 👀 写真付きの導入ガイドはこちら 🔻
 
 ### **[https://looklook-pages.pages.dev](https://looklook-pages.pages.dev)**
